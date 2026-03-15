@@ -1,237 +1,237 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Smart Price Tracker — Theo dõi giá Crypto, Vàng, Cổ phiếu VN</title>
-<meta name="description" content="Theo dõi giá Bitcoin, Ethereum, vàng, cổ phiếu Việt Nam, xăng dầu theo thời gian thực. Thêm bất kỳ tài sản nào bằng AI."/>
-<meta name="keywords" content="giá bitcoin, giá vàng hôm nay, giá xăng hôm nay, cổ phiếu VN, theo dõi giá, crypto vietnam"/>
-<meta name="author" content="Smart Price Tracker"/>
-<meta property="og:title" content="Smart Price Tracker"/>
-<meta property="og:description" content="Theo dõi giá Crypto, Vàng, Cổ phiếu VN, Xăng dầu - Thời gian thực"/>
-<meta property="og:type" content="website"/>
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Smart Price Tracker"/>
-<meta name="twitter:description" content="Theo dõi giá tài sản thời gian thực tại Việt Nam"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>"/>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);--text:#e8e8f0;--text2:#7777aa;--green:#00ff88;--red:#ff3355;--blue:#00ccff;--yellow:#ffcc00}
-[data-theme=light]{--bg:#f0f0f8;--bg2:#e4e4ef;--bg3:#ffffff;--border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.15);--text:#111120;--text2:#555577}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Smart Price Tracker — Theo dõi giá Crypto, Vàng, Cổ phiếu VN</title>
+  <meta name="description" content="Theo dõi giá Bitcoin, Ethereum, vàng, cổ phiếu Việt Nam, xăng dầu theo thời gian thực. Thêm bất kỳ tài sản nào bằng AI."/>
+  <meta name="keywords" content="giá bitcoin, giá vàng hôm nay, giá xăng hôm nay, cổ phiếu VN, theo dõi giá, crypto vietnam"/>
+  <meta name="author" content="Smart Price Tracker"/>
+  <meta property="og:title" content="Smart Price Tracker"/>
+  <meta property="og:description" content="Theo dõi giá Crypto, Vàng, Cổ phiếu VN, Xăng dầu - Thời gian thực"/>
+  <meta property="og:type" content="website"/>
+  <meta name="twitter:card" content="summary"/>
+  <meta name="twitter:title" content="Smart Price Tracker"/>
+  <meta name="twitter:description" content="Theo dõi giá tài sản thời gian thực tại Việt Nam"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);--text:#e8e8f0;--text2:#7777aa;--green:#00ff88;--red:#ff3355;--blue:#00ccff;--yellow:#ffcc00}
+    [data-theme=light]{--bg:#f0f0f8;--bg2:#e4e4ef;--bg3:#ffffff;--border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.15);--text:#111120;--text2:#555577}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 
-/* AUTH SCREEN */
-#auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:radial-gradient(ellipse at 50% 0%, rgba(0,255,136,.08) 0%, transparent 60%), var(--bg)}
-.auth-box{width:100%;max-width:420px;padding:20px}
-.auth-logo{text-align:center;margin-bottom:32px}
-.auth-logo-icon{width:56px;height:56px;background:var(--green);border-radius:14px;display:inline-flex;align-items:center;justify-content:center;font-family:'Space Mono';font-weight:700;font-size:22px;color:#000;margin-bottom:12px}
-.auth-logo h1{font-size:22px;font-weight:800;letter-spacing:-.5px}
-.auth-logo p{font-size:13px;color:var(--text2);margin-top:4px}
-.auth-card{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:28px}
-.auth-tabs{display:flex;background:var(--bg3);border-radius:8px;padding:3px;margin-bottom:24px}
-.auth-tab{flex:1;padding:8px;text-align:center;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text2);transition:all .15s}
-.auth-tab.active{background:var(--green);color:#000}
-.auth-field{margin-bottom:16px}
-.auth-field label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.7px}
-.auth-field input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border-color .2s}
-.auth-field input:focus{border-color:var(--green)}
-.auth-field input::placeholder{color:var(--text2)}
-.auth-btn{width:100%;padding:12px;background:var(--green);color:#000;border:none;border-radius:8px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:background .15s;margin-top:4px}
-.auth-btn:hover{background:#00dd77}
-.auth-btn:disabled{background:var(--border2);color:var(--text2);cursor:not-allowed}
-.auth-error{background:rgba(255,51,85,.1);border:1px solid rgba(255,51,85,.2);color:var(--red);border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px;display:none}
-.auth-error.show{display:block}
-.auth-divider{text-align:center;color:var(--text2);font-size:12px;margin:16px 0;position:relative}
-.auth-divider::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:var(--border)}
-.auth-divider span{background:var(--bg2);padding:0 10px;position:relative}
-.demo-btn{width:100%;padding:10px;background:transparent;border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:13px;font-family:inherit;cursor:pointer;transition:all .15s}
-.demo-btn:hover{border-color:var(--green);color:var(--green)}
+    /* AUTH SCREEN */
+    #auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:radial-gradient(ellipse at 50% 0%, rgba(0,255,136,.08) 0%, transparent 60%), var(--bg)}
+    .auth-box{width:100%;max-width:420px;padding:20px}
+    .auth-logo{text-align:center;margin-bottom:32px}
+    .auth-logo-icon{width:56px;height:56px;background:var(--green);border-radius:14px;display:inline-flex;align-items:center;justify-content:center;font-family:'Space Mono';font-weight:700;font-size:22px;color:#000;margin-bottom:12px}
+    .auth-logo h1{font-size:22px;font-weight:800;letter-spacing:-.5px}
+    .auth-logo p{font-size:13px;color:var(--text2);margin-top:4px}
+    .auth-card{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:28px}
+    .auth-tabs{display:flex;background:var(--bg3);border-radius:8px;padding:3px;margin-bottom:24px}
+    .auth-tab{flex:1;padding:8px;text-align:center;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text2);transition:all .15s}
+    .auth-tab.active{background:var(--green);color:#000}
+    .auth-field{margin-bottom:16px}
+    .auth-field label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.7px}
+    .auth-field input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border-color .2s}
+    .auth-field input:focus{border-color:var(--green)}
+    .auth-field input::placeholder{color:var(--text2)}
+    .auth-btn{width:100%;padding:12px;background:var(--green);color:#000;border:none;border-radius:8px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:background .15s;margin-top:4px}
+    .auth-btn:hover{background:#00dd77}
+    .auth-btn:disabled{background:var(--border2);color:var(--text2);cursor:not-allowed}
+    .auth-error{background:rgba(255,51,85,.1);border:1px solid rgba(255,51,85,.2);color:var(--red);border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px;display:none}
+    .auth-error.show{display:block}
+    .auth-divider{text-align:center;color:var(--text2);font-size:12px;margin:16px 0;position:relative}
+    .auth-divider::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:var(--border)}
+    .auth-divider span{background:var(--bg2);padding:0 10px;position:relative}
+    .demo-btn{width:100%;padding:10px;background:transparent;border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:13px;font-family:inherit;cursor:pointer;transition:all .15s}
+    .demo-btn:hover{border-color:var(--green);color:var(--green)}
 
-/* APP LAYOUT */
-#app-screen{display:none}
-#app-screen.show{display:flex}
-#sidebar{width:230px;min-height:100vh;background:var(--bg2);border-right:1px solid var(--border);position:fixed;top:0;left:0;z-index:100;display:flex;flex-direction:column;transition:transform .3s}
-.s-logo{padding:18px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
-.s-logo-icon{width:34px;height:34px;background:var(--green);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Space Mono';font-weight:700;font-size:16px;color:#000}
-.s-logo-text{font-size:13px;font-weight:700;line-height:1.3}.s-logo-text span{color:var(--green)}
-.s-nav{padding:12px 10px;flex:1;overflow-y:auto}
-.s-sec{font-size:10px;font-weight:600;color:var(--text2);letter-spacing:1.5px;text-transform:uppercase;padding:10px 8px 4px}
-.nav-item{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text2);transition:all .15s;margin-bottom:1px;border:1px solid transparent;user-select:none}
-.nav-item:hover{background:var(--bg3);color:var(--text)}
-.nav-item.active{background:rgba(0,255,136,.1);color:var(--green);border-color:rgba(0,255,136,.2)}
-.nav-item .ni{font-size:15px;width:18px;text-align:center}
-.nav-badge{margin-left:auto;background:var(--green);color:#000;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;font-family:'Space Mono'}
-.s-user{padding:12px 16px;border-top:1px solid var(--border)}
-.user-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--blue));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#000;flex-shrink:0}
-.user-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.user-email{font-size:10px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'JetBrains Mono'}
-.logout-btn{width:100%;padding:7px;background:rgba(255,51,85,.1);border:1px solid rgba(255,51,85,.2);border-radius:7px;color:var(--red);font-size:12px;font-family:inherit;cursor:pointer;transition:all .15s}
-.logout-btn:hover{background:rgba(255,51,85,.2)}
-.theme-btn{width:100%;padding:7px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text2);font-family:inherit;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .15s;margin-bottom:8px}
+    /* APP LAYOUT */
+    #app-screen{display:none}
+    #app-screen.show{display:flex}
+    #sidebar{width:230px;height:100vh;background:var(--bg2);border-right:1px solid var(--border);position:fixed;top:0;left:0;z-index:100;display:flex;flex-direction:column;transition:transform .3s;overflow:hidden}
+    .s-logo{padding:18px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+    .s-logo-icon{width:34px;height:34px;background:var(--green);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Space Mono';font-weight:700;font-size:16px;color:#000}
+    .s-logo-text{font-size:13px;font-weight:700;line-height:1.3}.s-logo-text span{color:var(--green)}
+    .s-nav{padding:12px 10px;flex:1;overflow-y:auto}
+    .s-sec{font-size:10px;font-weight:600;color:var(--text2);letter-spacing:1.5px;text-transform:uppercase;padding:10px 8px 4px}
+    .nav-item{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text2);transition:all .15s;margin-bottom:1px;border:1px solid transparent;user-select:none}
+    .nav-item:hover{background:var(--bg3);color:var(--text)}
+    .nav-item.active{background:rgba(0,255,136,.1);color:var(--green);border-color:rgba(0,255,136,.2)}
+    .nav-item .ni{font-size:15px;width:18px;text-align:center}
+    .nav-badge{margin-left:auto;background:var(--green);color:#000;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;font-family:'Space Mono'}
+    .s-user{padding:12px 16px;border-top:1px solid var(--border)}
+    .user-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+    .user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--blue));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#000;flex-shrink:0}
+    .user-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .user-email{font-size:10px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'JetBrains Mono'}
+    .logout-btn{width:100%;padding:7px;background:rgba(255,51,85,.1);border:1px solid rgba(255,51,85,.2);border-radius:7px;color:var(--red);font-size:12px;font-family:inherit;cursor:pointer;transition:all .15s}
+    .logout-btn:hover{background:rgba(255,51,85,.2)}
+    .theme-btn{width:100%;padding:7px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text2);font-family:inherit;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .15s;margin-bottom:8px}
 
-#main{margin-left:230px;flex:1;display:flex;flex-direction:column;min-height:100vh;overflow-x:hidden}
-#api-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:5px 20px;display:flex;gap:14px;align-items:center;font-size:11px;font-family:'JetBrains Mono';flex-wrap:wrap}
-.api-dot{width:7px;height:7px;border-radius:50%;background:var(--text2);display:inline-block;margin-right:4px}
-.api-dot.ok{background:var(--green);box-shadow:0 0 5px var(--green)}.api-dot.loading{background:var(--yellow);animation:blink .8s infinite}.api-dot.error{background:var(--red)}.api-dot.mock{background:var(--blue)}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-#ticker{background:var(--bg2);border-bottom:1px solid var(--border);overflow:hidden;padding:6px 0;height:32px}
-.ticker-track{display:flex;width:max-content;animation:tick 35s linear infinite}
-.ticker-track:hover{animation-play-state:paused}
-.t-item{display:flex;align-items:center;gap:6px;padding:0 20px;font-size:11px;font-family:'JetBrains Mono';white-space:nowrap;border-right:1px solid var(--border)}
-.t-sym{color:var(--text2)}.up{color:var(--green)}.down{color:var(--red)}
-@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-#topbar{background:var(--bg2);border-bottom:1px solid var(--border);height:56px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
-.tb-left{display:flex;align-items:center;gap:14px}.tb-right{display:flex;align-items:center;gap:10px}
-#page-title{font-size:17px;font-weight:700;letter-spacing:-.3px}
-.search-wrap{display:flex;align-items:center;gap:7px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:0 12px;height:36px;width:250px;transition:border-color .2s}
-.search-wrap:focus-within{border-color:var(--green)}
-.search-wrap input{background:none;border:none;outline:none;color:var(--text);font-size:13px;font-family:inherit;width:100%}
-.search-wrap input::placeholder{color:var(--text2)}
-.live-dot{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--green);font-family:'JetBrains Mono'}
-.live-dot::before{content:'';width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.5s infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
-.hamburger{display:none;background:none;border:none;color:var(--text);font-size:22px;cursor:pointer;padding:4px}
-#page{padding:20px;flex:1;overflow-x:hidden}
+    #main{margin-left:230px;flex:1;display:flex;flex-direction:column;min-height:100vh;overflow-x:hidden}
+    #api-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:5px 20px;display:flex;gap:14px;align-items:center;font-size:11px;font-family:'JetBrains Mono';flex-wrap:wrap}
+    .api-dot{width:7px;height:7px;border-radius:50%;background:var(--text2);display:inline-block;margin-right:4px}
+    .api-dot.ok{background:var(--green);box-shadow:0 0 5px var(--green)}.api-dot.loading{background:var(--yellow);animation:blink .8s infinite}.api-dot.error{background:var(--red)}.api-dot.mock{background:var(--blue)}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    #ticker{background:var(--bg2);border-bottom:1px solid var(--border);overflow:hidden;padding:6px 0;height:32px}
+    .ticker-track{display:flex;width:max-content;animation:tick 35s linear infinite}
+    .ticker-track:hover{animation-play-state:paused}
+    .t-item{display:flex;align-items:center;gap:6px;padding:0 20px;font-size:11px;font-family:'JetBrains Mono';white-space:nowrap;border-right:1px solid var(--border)}
+    .t-sym{color:var(--text2)}.up{color:var(--green)}.down{color:var(--red)}
+    @keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    #topbar{background:var(--bg2);border-bottom:1px solid var(--border);height:56px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+    .tb-left{display:flex;align-items:center;gap:14px}.tb-right{display:flex;align-items:center;gap:10px}
+    #page-title{font-size:17px;font-weight:700;letter-spacing:-.3px}
+    .search-wrap{display:flex;align-items:center;gap:7px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:0 12px;height:36px;width:250px;transition:border-color .2s}
+    .search-wrap:focus-within{border-color:var(--green)}
+    .search-wrap input{background:none;border:none;outline:none;color:var(--text);font-size:13px;font-family:inherit;width:100%}
+    .search-wrap input::placeholder{color:var(--text2)}
+    .live-dot{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--green);font-family:'JetBrains Mono'}
+    .live-dot::before{content:'';width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.5s infinite}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+    .hamburger{display:none;background:none;border:none;color:var(--text);font-size:22px;cursor:pointer;padding:4px}
+    #page{padding:20px;flex:1;overflow-x:hidden}
 
-/* CARDS */
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
-.stat-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
-.sc-green::before{background:var(--green)}.sc-red::before{background:var(--red)}.sc-blue::before{background:var(--blue)}.sc-yellow::before{background:var(--yellow)}
-.stat-label{font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
-.stat-val{font-size:26px;font-weight:800;font-family:'Space Mono';letter-spacing:-1px;line-height:1}
-.stat-sub{font-size:11px;color:var(--text2);margin-top:5px;font-family:'JetBrains Mono'}
-.stat-sub.up{color:var(--green)}.stat-sub.down{color:var(--red)}
-.assets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
-.asset-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;position:relative}
-.asset-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.25)}
-.asset-card.in-watch{border-color:rgba(255,204,0,.25)}
-.ac-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.ac-info{display:flex;align-items:center;gap:10px}
-.ac-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
-.ac-name{font-size:14px;font-weight:700}.ac-sym{font-size:11px;color:var(--text2);font-family:'JetBrains Mono'}
-.ac-price{font-size:22px;font-weight:800;font-family:'Space Mono';letter-spacing:-.5px;margin-bottom:4px}
-.ac-change{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;font-family:'JetBrains Mono';padding:2px 7px;border-radius:4px;margin-right:8px}
-.ac-change.up{background:rgba(0,255,136,.1);color:var(--green)}.ac-change.down{background:rgba(255,51,85,.1);color:var(--red)}
-.ac-time{font-size:10px;color:var(--text2);font-family:'JetBrains Mono'}
-.sparkline-wrap{height:38px;margin-top:10px}
-.star-btn{width:27px;height:27px;border-radius:6px;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .15s;user-select:none}
-.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.sec-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
-.sec-title::before{content:'';display:inline-block;width:3px;height:15px;background:var(--green);border-radius:2px}
-.cat-filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
-.cat-btn{padding:5px 13px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg3);color:var(--text2);transition:all .15s;font-family:inherit}
-.cat-btn:hover{color:var(--text);border-color:var(--border2)}.cat-btn.active{background:var(--green);color:#000;border-color:var(--green)}
-.card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:18px}
-.card-title{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px}
-.chart-tabs{display:flex;gap:3px;background:var(--bg2);border-radius:7px;padding:3px;width:fit-content}
-.chart-tab{padding:4px 11px;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;color:var(--text2);transition:all .15s;font-family:'Space Mono';user-select:none}
-.chart-tab.active{background:var(--bg3);color:var(--text)}
-.alert-item{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin-bottom:7px;gap:12px;flex-wrap:wrap}
-.alert-item.triggered{border-color:var(--green);background:rgba(0,255,136,.04)}
-.cond-badge{padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;font-family:'Space Mono'}
-.cond-badge.above{background:rgba(0,255,136,.15);color:var(--green)}.cond-badge.below{background:rgba(255,51,85,.15);color:var(--red)}
-.heatmap-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
-.hm-cell{border-radius:10px;padding:14px 10px;text-align:center;cursor:pointer;transition:transform .2s;min-width:0;overflow:hidden}
-.hm-cell:hover{transform:scale(1.02)}
-.hm-icon{font-size:20px;margin-bottom:4px}.hm-name{font-size:11px;font-weight:700;margin-bottom:3px;white-space:normal;line-height:1.3}
-.hm-chg{font-size:16px;font-weight:800;font-family:'Space Mono'}.hm-price{font-size:10px;color:rgba(255,255,255,.6);margin-top:3px;font-family:'JetBrains Mono';overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px}
-.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:680px;max-height:90vh;overflow-y:auto;padding:24px}
-.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.modal-title{font-size:19px;font-weight:800}
-.close-btn{width:30px;height:30px;border-radius:7px;background:var(--bg3);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--text2)}
-.form-row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
-.form-input{background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:7px 11px;color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color .2s}
-.form-input:focus{border-color:var(--green)}
-.form-select{background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:7px 11px;color:var(--text);font-size:13px;font-family:inherit;outline:none;cursor:pointer}
-.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:7px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;border:none;transition:all .15s}
-.btn-primary{background:var(--green);color:#000}.btn-primary:hover{background:#00dd77}
-.btn-ghost{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}.btn-ghost:hover{color:var(--text)}
-.btn-danger{background:rgba(255,51,85,.1);color:var(--red);border:1px solid rgba(255,51,85,.2)}.btn-danger:hover{background:rgba(255,51,85,.2)}
-.btn-warn{background:rgba(255,204,0,.1);color:var(--yellow);border:1px solid rgba(255,204,0,.2)}.btn-sm{padding:4px 9px;font-size:11px}
-.notif-wrap{position:fixed;top:68px;right:16px;width:300px;z-index:400;display:flex;flex-direction:column;gap:7px;pointer-events:none}
-.notif{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;border-left:3px solid var(--green);pointer-events:all;box-shadow:0 8px 30px rgba(0,0,0,.35);animation:sIn .3s ease;cursor:pointer}
-.notif.alert-type{border-left-color:var(--yellow)}.notif-title{font-size:12px;font-weight:700;margin-bottom:3px}.notif-msg{font-size:11px;color:var(--text2);font-family:'JetBrains Mono'}
-@keyframes sIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
-.ml-card{background:linear-gradient(135deg,rgba(0,255,136,.05),rgba(0,204,255,.05));border:1px solid rgba(0,255,136,.12);border-radius:10px;padding:16px}
-.pred-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:7px;font-size:11px;font-weight:700;font-family:'JetBrains Mono'}
-.pred-badge.bullish{background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.2)}
-.pred-badge.bearish{background:rgba(255,51,85,.1);color:var(--red);border:1px solid rgba(255,51,85,.2)}
-.pred-badge.neutral{background:rgba(255,204,0,.1);color:var(--yellow);border:1px solid rgba(255,204,0,.2)}
-.conf-row{display:flex;align-items:center;gap:8px;margin-top:7px}.conf-label{font-size:10px;color:var(--text2);width:65px}
-.conf-track{flex:1;height:5px;background:var(--bg2);border-radius:3px;overflow:hidden}.conf-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--blue));border-radius:3px;transition:width .6s ease}
-.conf-pct{font-size:10px;font-weight:700;font-family:'Space Mono';width:30px;text-align:right}
-.mini3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
-.mcard{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:13px}
-.mcard-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px}.mcard-val{font-size:16px;font-weight:800;font-family:'Space Mono'}
-.cmp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:14px}
-.cmp-card{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:13px;text-align:center}
-.source-tag{display:inline-flex;padding:1px 6px;border-radius:4px;font-size:9px;font-weight:600;font-family:'JetBrains Mono'}
-.src-coingecko{background:rgba(0,255,136,.15);color:var(--green)}.src-exchangerate-api{background:rgba(0,204,255,.15);color:var(--blue)}
-.src-goldapi,.src-gold-api\.com{background:rgba(255,204,0,.15);color:var(--yellow)}.src-mock,.src-static{background:rgba(136,136,170,.15);color:var(--text2)}.src-frankfurter{background:rgba(255,102,68,.15);color:#ff6644}
-.empty{text-align:center;padding:50px 20px;color:var(--text2)}.empty .ei{font-size:44px;margin-bottom:14px}.empty h3{font-size:17px;margin-bottom:6px;color:var(--text)}
-/* AI AGENT UI */
-.ai-search-box{background:var(--bg2);border:2px solid var(--border);border-radius:16px;padding:24px;margin-bottom:24px;transition:border-color .2s;position:relative}
-.ai-search-box:focus-within{border-color:var(--green)}
-.ai-title{font-size:18px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:8px}
-.ai-sub{font-size:13px;color:var(--text2);margin-bottom:18px}
-.ai-input-row{display:flex;gap:10px;align-items:center}
-.ai-input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:border-color .2s}
-.ai-input:focus{border-color:var(--green)}
-.ai-input::placeholder{color:var(--text2)}
-.ai-btn{padding:12px 20px;background:var(--green);color:#000;border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;transition:background .15s;display:flex;align-items:center;gap:7px}
-.ai-btn:hover{background:#00dd77}
-.ai-btn:disabled{background:var(--border2);color:var(--text2);cursor:not-allowed}
-.ai-examples{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.ai-chip{padding:5px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;font-size:12px;cursor:pointer;color:var(--text2);transition:all .15s}
-.ai-chip:hover{border-color:var(--green);color:var(--green)}
-.ai-status{margin-top:14px;padding:12px 16px;border-radius:10px;font-size:13px;display:none;align-items:center;gap:10px}
-.ai-status.thinking{display:flex;background:rgba(0,204,255,.08);border:1px solid rgba(0,204,255,.2);color:var(--blue)}
-.ai-status.success{display:flex;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.2);color:var(--green)}
-.ai-status.error{display:flex;background:rgba(255,51,85,.08);border:1px solid rgba(255,51,85,.2);color:var(--red)}
-.ai-spinner{width:16px;height:16px;border:2px solid rgba(0,204,255,.3);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
-@keyframes spin{to{transform:rotate(360deg)}}
-.ai-result-card{background:var(--bg2);border:1px solid rgba(0,255,136,.25);border-radius:12px;padding:18px;margin-top:14px;display:none}
-.ai-result-card.show{display:block}
-.ai-result-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.ai-result-icon{font-size:28px}
-.ai-result-name{font-size:16px;font-weight:800}
-.ai-result-meta{font-size:11px;color:var(--text2);font-family:'JetBrains Mono'}
-.ai-result-price{font-size:26px;font-weight:800;font-family:'Space Mono';margin-bottom:6px}
-.ai-result-reasoning{font-size:12px;color:var(--text2);font-style:italic;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
-.ai-confirm-row{display:flex;gap:8px;margin-top:14px}
+    /* CARDS */
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+    .stat-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden}
+    .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+    .sc-green::before{background:var(--green)}.sc-red::before{background:var(--red)}.sc-blue::before{background:var(--blue)}.sc-yellow::before{background:var(--yellow)}
+    .stat-label{font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+    .stat-val{font-size:26px;font-weight:800;font-family:'Space Mono';letter-spacing:-1px;line-height:1}
+    .stat-sub{font-size:11px;color:var(--text2);margin-top:5px;font-family:'JetBrains Mono'}
+    .stat-sub.up{color:var(--green)}.stat-sub.down{color:var(--red)}
+    .assets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+    .asset-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;position:relative}
+    .asset-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.25)}
+    .asset-card.in-watch{border-color:rgba(255,204,0,.25)}
+    .ac-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .ac-info{display:flex;align-items:center;gap:10px}
+    .ac-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+    .ac-name{font-size:14px;font-weight:700}.ac-sym{font-size:11px;color:var(--text2);font-family:'JetBrains Mono'}
+    .ac-price{font-size:22px;font-weight:800;font-family:'Space Mono';letter-spacing:-.5px;margin-bottom:4px}
+    .ac-change{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;font-family:'JetBrains Mono';padding:2px 7px;border-radius:4px;margin-right:8px}
+    .ac-change.up{background:rgba(0,255,136,.1);color:var(--green)}.ac-change.down{background:rgba(255,51,85,.1);color:var(--red)}
+    .ac-time{font-size:10px;color:var(--text2);font-family:'JetBrains Mono'}
+    .sparkline-wrap{height:38px;margin-top:10px}
+    .star-btn{width:27px;height:27px;border-radius:6px;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .15s;user-select:none}
+    .sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .sec-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+    .sec-title::before{content:'';display:inline-block;width:3px;height:15px;background:var(--green);border-radius:2px}
+    .cat-filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
+    .cat-btn{padding:5px 13px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg3);color:var(--text2);transition:all .15s;font-family:inherit}
+    .cat-btn:hover{color:var(--text);border-color:var(--border2)}.cat-btn.active{background:var(--green);color:#000;border-color:var(--green)}
+    .card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:18px}
+    .card-title{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px}
+    .chart-tabs{display:flex;gap:3px;background:var(--bg2);border-radius:7px;padding:3px;width:fit-content}
+    .chart-tab{padding:4px 11px;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;color:var(--text2);transition:all .15s;font-family:'Space Mono';user-select:none}
+    .chart-tab.active{background:var(--bg3);color:var(--text)}
+    .alert-item{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin-bottom:7px;gap:12px;flex-wrap:wrap}
+    .alert-item.triggered{border-color:var(--green);background:rgba(0,255,136,.04)}
+    .cond-badge{padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;font-family:'Space Mono'}
+    .cond-badge.above{background:rgba(0,255,136,.15);color:var(--green)}.cond-badge.below{background:rgba(255,51,85,.15);color:var(--red)}
+    .heatmap-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+    .hm-cell{border-radius:10px;padding:14px 10px;text-align:center;cursor:pointer;transition:transform .2s;min-width:0;overflow:hidden}
+    .hm-cell:hover{transform:scale(1.02)}
+    .hm-icon{font-size:20px;margin-bottom:4px}.hm-name{font-size:11px;font-weight:700;margin-bottom:3px;white-space:normal;line-height:1.3}
+    .hm-chg{font-size:16px;font-weight:800;font-family:'Space Mono'}.hm-price{font-size:10px;color:rgba(255,255,255,.6);margin-top:3px;font-family:'JetBrains Mono';overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px}
+    .modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:680px;max-height:90vh;overflow-y:auto;padding:24px}
+    .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+    .modal-title{font-size:19px;font-weight:800}
+    .close-btn{width:30px;height:30px;border-radius:7px;background:var(--bg3);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--text2)}
+    .form-row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+    .form-input{background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:7px 11px;color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color .2s}
+    .form-input:focus{border-color:var(--green)}
+    .form-select{background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:7px 11px;color:var(--text);font-size:13px;font-family:inherit;outline:none;cursor:pointer}
+    .btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:7px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;border:none;transition:all .15s}
+    .btn-primary{background:var(--green);color:#000}.btn-primary:hover{background:#00dd77}
+    .btn-ghost{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}.btn-ghost:hover{color:var(--text)}
+    .btn-danger{background:rgba(255,51,85,.1);color:var(--red);border:1px solid rgba(255,51,85,.2)}.btn-danger:hover{background:rgba(255,51,85,.2)}
+    .btn-warn{background:rgba(255,204,0,.1);color:var(--yellow);border:1px solid rgba(255,204,0,.2)}.btn-sm{padding:4px 9px;font-size:11px}
+    .notif-wrap{position:fixed;top:68px;right:16px;width:300px;z-index:400;display:flex;flex-direction:column;gap:7px;pointer-events:none}
+    .notif{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;border-left:3px solid var(--green);pointer-events:all;box-shadow:0 8px 30px rgba(0,0,0,.35);animation:sIn .3s ease;cursor:pointer}
+    .notif.alert-type{border-left-color:var(--yellow)}.notif-title{font-size:12px;font-weight:700;margin-bottom:3px}.notif-msg{font-size:11px;color:var(--text2);font-family:'JetBrains Mono'}
+    @keyframes sIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+    .ml-card{background:linear-gradient(135deg,rgba(0,255,136,.05),rgba(0,204,255,.05));border:1px solid rgba(0,255,136,.12);border-radius:10px;padding:16px}
+    .pred-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:7px;font-size:11px;font-weight:700;font-family:'JetBrains Mono'}
+    .pred-badge.bullish{background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.2)}
+    .pred-badge.bearish{background:rgba(255,51,85,.1);color:var(--red);border:1px solid rgba(255,51,85,.2)}
+    .pred-badge.neutral{background:rgba(255,204,0,.1);color:var(--yellow);border:1px solid rgba(255,204,0,.2)}
+    .conf-row{display:flex;align-items:center;gap:8px;margin-top:7px}.conf-label{font-size:10px;color:var(--text2);width:65px}
+    .conf-track{flex:1;height:5px;background:var(--bg2);border-radius:3px;overflow:hidden}.conf-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--blue));border-radius:3px;transition:width .6s ease}
+    .conf-pct{font-size:10px;font-weight:700;font-family:'Space Mono';width:30px;text-align:right}
+    .mini3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+    .mcard{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:13px}
+    .mcard-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px}.mcard-val{font-size:16px;font-weight:800;font-family:'Space Mono'}
+    .cmp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:14px}
+    .cmp-card{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:13px;text-align:center}
+    .source-tag{display:inline-flex;padding:1px 6px;border-radius:4px;font-size:9px;font-weight:600;font-family:'JetBrains Mono'}
+    .src-coingecko{background:rgba(0,255,136,.15);color:var(--green)}.src-exchangerate-api{background:rgba(0,204,255,.15);color:var(--blue)}
+    .src-goldapi,.src-gold-api\.com{background:rgba(255,204,0,.15);color:var(--yellow)}.src-mock,.src-static{background:rgba(136,136,170,.15);color:var(--text2)}.src-frankfurter{background:rgba(255,102,68,.15);color:#ff6644}
+    .empty{text-align:center;padding:50px 20px;color:var(--text2)}.empty .ei{font-size:44px;margin-bottom:14px}.empty h3{font-size:17px;margin-bottom:6px;color:var(--text)}
+    /* AI AGENT UI */
+    .ai-search-box{background:var(--bg2);border:2px solid var(--border);border-radius:16px;padding:24px;margin-bottom:24px;transition:border-color .2s;position:relative}
+    .ai-search-box:focus-within{border-color:var(--green)}
+    .ai-title{font-size:18px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+    .ai-sub{font-size:13px;color:var(--text2);margin-bottom:18px}
+    .ai-input-row{display:flex;gap:10px;align-items:center}
+    .ai-input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:border-color .2s}
+    .ai-input:focus{border-color:var(--green)}
+    .ai-input::placeholder{color:var(--text2)}
+    .ai-btn{padding:12px 20px;background:var(--green);color:#000;border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;transition:background .15s;display:flex;align-items:center;gap:7px}
+    .ai-btn:hover{background:#00dd77}
+    .ai-btn:disabled{background:var(--border2);color:var(--text2);cursor:not-allowed}
+    .ai-examples{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .ai-chip{padding:5px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;font-size:12px;cursor:pointer;color:var(--text2);transition:all .15s}
+    .ai-chip:hover{border-color:var(--green);color:var(--green)}
+    .ai-status{margin-top:14px;padding:12px 16px;border-radius:10px;font-size:13px;display:none;align-items:center;gap:10px}
+    .ai-status.thinking{display:flex;background:rgba(0,204,255,.08);border:1px solid rgba(0,204,255,.2);color:var(--blue)}
+    .ai-status.success{display:flex;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.2);color:var(--green)}
+    .ai-status.error{display:flex;background:rgba(255,51,85,.08);border:1px solid rgba(255,51,85,.2);color:var(--red)}
+    .ai-spinner{width:16px;height:16px;border:2px solid rgba(0,204,255,.3);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .ai-result-card{background:var(--bg2);border:1px solid rgba(0,255,136,.25);border-radius:12px;padding:18px;margin-top:14px;display:none}
+    .ai-result-card.show{display:block}
+    .ai-result-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .ai-result-icon{font-size:28px}
+    .ai-result-name{font-size:16px;font-weight:800}
+    .ai-result-meta{font-size:11px;color:var(--text2);font-family:'JetBrains Mono'}
+    .ai-result-price{font-size:26px;font-weight:800;font-family:'Space Mono';margin-bottom:6px}
+    .ai-result-reasoning{font-size:12px;color:var(--text2);font-style:italic;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+    .ai-confirm-row{display:flex;gap:8px;margin-top:14px}
 
-.dynamic-asset-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin-bottom:7px;gap:12px;flex-wrap:wrap}
-.dynamic-badge{background:rgba(0,204,255,.1);color:var(--blue);border:1px solid rgba(0,204,255,.2);padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;font-family:'Space Mono'}
-.no-key-banner{background:rgba(255,204,0,.08);border:1px solid rgba(255,204,0,.2);border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px}
-.no-key-banner .icon{font-size:24px;flex-shrink:0}
-.sidebar-mask{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:90}
-.delete-btn{opacity:0;transition:opacity .15s}
-.asset-card:hover .delete-btn{opacity:1}
-/* Confirm dialog */
-.confirm-dialog{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px}
-.confirm-box{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:24px;max-width:380px;width:100%;text-align:center}
-.confirm-icon{font-size:36px;margin-bottom:12px}
-.confirm-title{font-size:17px;font-weight:800;margin-bottom:8px}
-.confirm-msg{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.5}
-.confirm-btns{display:flex;gap:10px;justify-content:center}
+    .dynamic-asset-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin-bottom:7px;gap:12px;flex-wrap:wrap}
+    .dynamic-badge{background:rgba(0,204,255,.1);color:var(--blue);border:1px solid rgba(0,204,255,.2);padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;font-family:'Space Mono'}
+    .no-key-banner{background:rgba(255,204,0,.08);border:1px solid rgba(255,204,0,.2);border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px}
+    .no-key-banner .icon{font-size:24px;flex-shrink:0}
+    .sidebar-mask{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:90}
+    .delete-btn{opacity:0;transition:opacity .15s}
+    .asset-card:hover .delete-btn{opacity:1}
+    /* Confirm dialog */
+    .confirm-dialog{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px}
+    .confirm-box{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:24px;max-width:380px;width:100%;text-align:center}
+    .confirm-icon{font-size:36px;margin-bottom:12px}
+    .confirm-title{font-size:17px;font-weight:800;margin-bottom:8px}
+    .confirm-msg{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.5}
+    .confirm-btns{display:flex;gap:10px;justify-content:center}
 
-@media(max-width:1400px){.heatmap-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}}
-@media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}.heatmap-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}}
-@media(max-width:700px){
-  #sidebar{transform:translateX(-100%)}#sidebar.open{transform:translateX(0)}
-  .sidebar-mask.show{display:block}#main{margin-left:0}.hamburger{display:block}
-  .stats-grid{grid-template-columns:repeat(2,1fr)}.search-wrap{width:160px}#page{padding:14px}
-  .mini3{grid-template-columns:1fr 1fr}.assets-grid{grid-template-columns:1fr}
-  .heatmap-grid{grid-template-columns:repeat(auto-fill,minmax(90px,1fr))}
-}
-@media(max-width:480px){.stats-grid{grid-template-columns:1fr}.search-wrap{width:120px}.heatmap-grid{grid-template-columns:repeat(3,1fr)}}
-</style>
+    @media(max-width:1400px){.heatmap-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}}
+    @media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}.heatmap-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}}
+    @media(max-width:700px){
+      #sidebar{transform:translateX(-100%)}#sidebar.open{transform:translateX(0)}
+      .sidebar-mask.show{display:block}#main{margin-left:0}.hamburger{display:block}
+      .stats-grid{grid-template-columns:repeat(2,1fr)}.search-wrap{width:160px}#page{padding:14px}
+      .mini3{grid-template-columns:1fr 1fr}.assets-grid{grid-template-columns:1fr}
+      .heatmap-grid{grid-template-columns:repeat(auto-fill,minmax(90px,1fr))}
+    }
+    @media(max-width:480px){.stats-grid{grid-template-columns:1fr}.search-wrap{width:120px}.heatmap-grid{grid-template-columns:repeat(3,1fr)}}
+  </style>
 </head>
 <body>
 
@@ -334,339 +334,339 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-he
 </div>
 
 <script>
-// Tự động dùng cùng domain khi deploy, localhost khi dev
-const BACKEND = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? 'http://localhost:3000'
-  : window.location.origin;
+  // Tự động dùng cùng domain khi deploy, localhost khi dev
+  const BACKEND = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+          ? 'http://localhost:3000'
+          : window.location.origin;
 
-const ASSETS = [
-  {id:1,name:'Bitcoin',sym:'BTC',cat:'crypto',icon:'₿',color:'#F7931A',price:67420,prev:65200,cur:'USD'},
-  {id:2,name:'Ethereum',sym:'ETH',cat:'crypto',icon:'Ξ',color:'#627EEA',price:3580,prev:3420,cur:'USD'},
-  {id:3,name:'Solana',sym:'SOL',cat:'crypto',icon:'◎',color:'#9945FF',price:178,prev:162,cur:'USD'},
-  {id:4,name:'US Dollar',sym:'USD/VND',cat:'currency',icon:'$',color:'#00C896',price:24850,prev:24780,cur:'VND'},
-  {id:5,name:'Japanese Yen',sym:'JPY/VND',cat:'currency',icon:'¥',color:'#E91E63',price:163,prev:161,cur:'VND'},
-  {id:6,name:'Euro',sym:'EUR/VND',cat:'currency',icon:'€',color:'#2196F3',price:26940,prev:27100,cur:'VND'},
-  {id:7,name:'Gold',sym:'XAU',cat:'metal',icon:'🥇',color:'#FFD700',price:2345,prev:2290,cur:'USD/oz'},
-  {id:8,name:'Silver',sym:'XAG',cat:'metal',icon:'🥈',color:'#C0C0C0',price:27.84,prev:26.90,cur:'USD/oz'},
-  {id:9,name:'iPhone 16 Pro',sym:'AAPL-IP16',cat:'product',icon:'📱',color:'#555',price:29990000,prev:29990000,cur:'VND'},
-  {id:10,name:'MacBook Pro M3',sym:'AAPL-MBP',cat:'product',icon:'💻',color:'#444',price:62900000,prev:64900000,cur:'VND'},
-  {id:11,name:'Gaming Laptop',sym:'ROG-G16',cat:'product',icon:'🎮',color:'#7B2FBE',price:45000000,prev:47000000,cur:'VND'},
-];
+  const ASSETS = [
+    {id:1,name:'Bitcoin',sym:'BTC',cat:'crypto',icon:'₿',color:'#F7931A',price:67420,prev:65200,cur:'USD'},
+    {id:2,name:'Ethereum',sym:'ETH',cat:'crypto',icon:'Ξ',color:'#627EEA',price:3580,prev:3420,cur:'USD'},
+    {id:3,name:'Solana',sym:'SOL',cat:'crypto',icon:'◎',color:'#9945FF',price:178,prev:162,cur:'USD'},
+    {id:4,name:'US Dollar',sym:'USD/VND',cat:'currency',icon:'$',color:'#00C896',price:24850,prev:24780,cur:'VND'},
+    {id:5,name:'Japanese Yen',sym:'JPY/VND',cat:'currency',icon:'¥',color:'#E91E63',price:163,prev:161,cur:'VND'},
+    {id:6,name:'Euro',sym:'EUR/VND',cat:'currency',icon:'€',color:'#2196F3',price:26940,prev:27100,cur:'VND'},
+    {id:7,name:'Gold',sym:'XAU',cat:'metal',icon:'🥇',color:'#FFD700',price:2345,prev:2290,cur:'USD/oz'},
+    {id:8,name:'Silver',sym:'XAG',cat:'metal',icon:'🥈',color:'#C0C0C0',price:27.84,prev:26.90,cur:'USD/oz'},
+    {id:9,name:'iPhone 16 Pro',sym:'AAPL-IP16',cat:'product',icon:'📱',color:'#555',price:29990000,prev:29990000,cur:'VND'},
+    {id:10,name:'MacBook Pro M3',sym:'AAPL-MBP',cat:'product',icon:'💻',color:'#444',price:62900000,prev:64900000,cur:'VND'},
+    {id:11,name:'Gaming Laptop',sym:'ROG-G16',cat:'product',icon:'🎮',color:'#7B2FBE',price:45000000,prev:47000000,cur:'VND'},
+  ];
 
-// State
-let currentUser = null;
-let dynamicAssets = []; // assets added by AI agent
-let hiddenAssets  = []; // static asset IDs hidden by user
-let authToken   = null;
-let watchlist   = [];
-let alerts      = [];
-let currentPage = 'dashboard';
-let currentCat  = 'all';
-let isDark      = true;
-let selectedAssetId = null;
-let sparkCharts = {}, modalChart = null, compareChart = null;
-let compareSelected = [1,2,7];
-let lastPriceSources = {};
-let _cardSeq = 0;
-const CHART_COLORS = ['#00ff88','#00ccff','#ffcc00','#ff6644','#aa66ff'];
+  // State
+  let currentUser = null;
+  let dynamicAssets = []; // assets added by AI agent
+  let hiddenAssets  = []; // static asset IDs hidden by user
+  let authToken   = null;
+  let watchlist   = [];
+  let alerts      = [];
+  let currentPage = 'dashboard';
+  let currentCat  = 'all';
+  let isDark      = true;
+  let selectedAssetId = null;
+  let sparkCharts = {}, modalChart = null, compareChart = null;
+  let compareSelected = [1,2,7];
+  let lastPriceSources = {};
+  let _cardSeq = 0;
+  const CHART_COLORS = ['#00ff88','#00ccff','#ffcc00','#ff6644','#aa66ff'];
 
-// ── UTILS ──────────────────────────────────────────────────────
-function fmtPrice(p,cur){
-  if(cur==='VND')return new Intl.NumberFormat('vi-VN').format(Math.round(p))+' ₫';
-  if(cur==='USD/oz')return'$'+p.toLocaleString(undefined,{minimumFractionDigits:2});
-  if(cur==='USD')return p>=1000?'$'+p.toLocaleString(undefined,{minimumFractionDigits:0}):'$'+p.toLocaleString(undefined,{minimumFractionDigits:2});
-  return p.toLocaleString();
-}
-function pct(cur,prev){return((cur-prev)/prev*100)}
-function el(id){return document.getElementById(id)}
-function timeAgo(ms){if(!ms)return'never';const s=Math.floor((Date.now()-ms)/1000);if(s<60)return s+'s ago';if(s<3600)return Math.floor(s/60)+'m ago';return Math.floor(s/3600)+'h ago';}
-function genHistory(base,days,vol=0.03){
-  const pts=days<=1?24:days,iv=days<=1?3600000:86400000,now=Date.now();
-  let p=base*0.9;
-  const data=Array.from({length:pts+1},(_,i)=>{p=p*(1+(Math.random()-.48)*vol);return{time:now-(pts-i)*iv,price:+p.toFixed(4)};});
-  data[data.length-1].price=base;return data;
-}
-
-// ── NOTIFICATIONS ──────────────────────────────────────────────
-function showNotif(title,msg,type=''){
-  const wrap=el('notif-wrap');
-  const n=document.createElement('div');n.className='notif '+(type?'alert-type':'');n.onclick=()=>n.remove();
-  n.innerHTML=`<div class="notif-title">${title}</div><div class="notif-msg">${msg}</div>`;
-  wrap.appendChild(n);setTimeout(()=>n.remove(),5000);
-}
-
-// ══════════════════════════════════════════════════
-// AUTH
-// ══════════════════════════════════════════════════
-function switchAuthTab(tab){
-  el('tab-login').classList.toggle('active',tab==='login');
-  el('tab-register').classList.toggle('active',tab==='register');
-  el('login-form').style.display=tab==='login'?'':'none';
-  el('register-form').style.display=tab==='register'?'':'none';
-  el('auth-error').classList.remove('show');
-}
-function showAuthError(msg){el('auth-error').textContent=msg;el('auth-error').classList.add('show');}
-function setAuthLoading(btnId,loading){const b=el(btnId);b.disabled=loading;b.textContent=loading?'Đang xử lý...':btnId==='login-btn'?'Đang nhập':'Tạo tài khoản';}
-
-async function apiCall(path,method='GET',body=null,token=null){
-  const opts={method,headers:{'Content-Type':'application/json'}};
-  if(token)opts.headers['Authorization']='Bearer '+token;
-  if(body)opts.body=JSON.stringify(body);
-  const res=await fetch(BACKEND+path,opts);
-  return res.json();
-}
-
-async function doLogin(){
-  const email=el('l-email').value.trim(),pass=el('l-pass').value;
-  if(!email||!pass){showAuthError('Vui lòng điền đầy đủ thông tin');return;}
-  setAuthLoading('login-btn',true);
-  try{
-    const d=await apiCall('/api/auth/login','POST',{email,password:pass});
-    if(!d.ok){showAuthError(d.error||'Đăng nhập thất bại');return;}
-    await onAuthSuccess(d.token,d.user);
-  }catch(e){showAuthError('Không thể kết nối backend. Chạy: node server.js');}
-  finally{setAuthLoading('login-btn',false);}
-}
-
-async function doRegister(){
-  const name=el('r-name').value.trim(),email=el('r-email').value.trim(),pass=el('r-pass').value;
-  if(!email||!pass){showAuthError('Email và password là bắt buộc');return;}
-  setAuthLoading('register-btn',true);
-  try{
-    const d=await apiCall('/api/auth/register','POST',{name,email,password:pass});
-    if(!d.ok){showAuthError(d.error||'Đăng ký thất bại');return;}
-    showNotif('🎉 Tài khoản đã tạo','Chào mừng '+d.user.name+'!');
-    await onAuthSuccess(d.token,d.user);
-  }catch(e){showAuthError('Không thể kết nối backend. Chạy: node server.js');}
-  finally{setAuthLoading('register-btn',false);}
-}
-
-async function doDemo(){
-  // Tạo hoặc login demo account
-  try{
-    let d=await apiCall('/api/auth/login','POST',{email:'demo@spt.com',password:'demo123'});
-    if(!d.ok){
-      d=await apiCall('/api/auth/register','POST',{name:'Demo User',email:'demo@spt.com',password:'demo123'});
-    }
-    if(!d.ok){showAuthError('Demo thất bại — chạy server.js trước');return;}
-    await onAuthSuccess(d.token,d.user);
-  }catch(e){showAuthError('Không thể kết nối backend. Chạy: node server.js');}
-}
-
-async function onAuthSuccess(token,user){
-  authToken=token;currentUser=user;
-  localStorage.setItem('spt_token',token);
-  localStorage.setItem('spt_user',JSON.stringify(user));
-  await loadUserData();
-  await showApp();
-}
-
-async function loadUserData(){
-  try{
-    const [wl,al,da,ha]=await Promise.all([
-      apiCall('/api/watchlist','GET',null,authToken),
-      apiCall('/api/alerts','GET',null,authToken),
-      apiCall('/api/ai/assets','GET',null,authToken),
-      apiCall('/api/assets/hidden','GET',null,authToken),
-    ]);
-    if(wl.ok)watchlist=wl.watchlist;
-    if(al.ok)alerts=al.alerts;
-    if(da.ok){ dynamicAssets=da.assets; injectDynamicAssets(); }
-    if(ha.ok) hiddenAssets=ha.hiddenAssets||[];
-  }catch(e){console.warn('Load user data failed:',e);}
-}
-
-function doLogout(){
-  authToken=null;currentUser=null;watchlist=[];alerts=[];
-  localStorage.removeItem('spt_token');localStorage.removeItem('spt_user');
-  el('app-screen').classList.remove('show');el('app-screen').style.display='none';
-  el('auth-screen').style.display='flex';
-  el('l-email').value='';el('l-pass').value='';
-  showNotif('↩ Đã đăng xuất','Hẹn gặp lại!');
-}
-
-// ── Auto login từ localStorage ──────────────────────────────
-async function tryAutoLogin(){
-  const token=localStorage.getItem('spt_token');
-  const user=localStorage.getItem('spt_user');
-  if(!token||!user)return false; // Thêm false ở đây
-  try{
-    const d=await apiCall('/api/auth/me','GET',null,token);
-    if(d.ok){
-      authToken=token;currentUser=d.user;
-      await loadUserData();
-      await showApp();
-      return true;
-    }
-    // Chỉ xoá token khi server xác nhận token sai/hết hạn
-    localStorage.removeItem('spt_token');
-    localStorage.removeItem('spt_user');
-  }catch(e){
-    // NẾU LỖI MẠNG (Server chưa lên kịp) -> KHÔNG ĐƯỢC XOÁ TOKEN
-    console.warn('Đang chờ server khởi động...');
+  // ── UTILS ──────────────────────────────────────────────────────
+  function fmtPrice(p,cur){
+    if(cur==='VND')return new Intl.NumberFormat('vi-VN').format(Math.round(p))+' ₫';
+    if(cur==='USD/oz')return'$'+p.toLocaleString(undefined,{minimumFractionDigits:2});
+    if(cur==='USD')return p>=1000?'$'+p.toLocaleString(undefined,{minimumFractionDigits:0}):'$'+p.toLocaleString(undefined,{minimumFractionDigits:2});
+    return p.toLocaleString();
   }
-  return false;
-}
+  function pct(cur,prev){return((cur-prev)/prev*100)}
+  function el(id){return document.getElementById(id)}
+  function timeAgo(ms){if(!ms)return'never';const s=Math.floor((Date.now()-ms)/1000);if(s<60)return s+'s ago';if(s<3600)return Math.floor(s/60)+'m ago';return Math.floor(s/3600)+'h ago';}
+  function genHistory(base,days,vol=0.03){
+    const pts=days<=1?24:days,iv=days<=1?3600000:86400000,now=Date.now();
+    let p=base*0.9;
+    const data=Array.from({length:pts+1},(_,i)=>{p=p*(1+(Math.random()-.48)*vol);return{time:now-(pts-i)*iv,price:+p.toFixed(4)};});
+    data[data.length-1].price=base;return data;
+  }
 
-async function showApp(){
-  el('auth-screen').style.display='none';
-  el('app-screen').style.display='flex';
-  el('app-screen').classList.add('show');
-  const initials=(currentUser.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-  el('user-avatar').textContent=initials;
-  el('user-name').textContent=currentUser.name||currentUser.email;
-  el('user-email').textContent=currentUser.email;
-  updateBadges();
-  buildTicker();
-  // Fetch giá thật TRƯỚC khi render → tất cả cards dùng giá mới nhất
-  await fetchPricesFromBackend();
-  buildTicker();
-  renderPage();
-  if(!window._pollInterval)window._pollInterval=setInterval(fetchAndUpdate,30000);
-}
+  // ── NOTIFICATIONS ──────────────────────────────────────────────
+  function showNotif(title,msg,type=''){
+    const wrap=el('notif-wrap');
+    const n=document.createElement('div');n.className='notif '+(type?'alert-type':'');n.onclick=()=>n.remove();
+    n.innerHTML=`<div class="notif-title">${title}</div><div class="notif-msg">${msg}</div>`;
+    wrap.appendChild(n);setTimeout(()=>n.remove(),5000);
+  }
 
-// ══════════════════════════════════════════════════
-// WATCHLIST & ALERTS (synced với backend)
-// ══════════════════════════════════════════════════
-async function toggleWatch(id){
-  const a=ASSETS.find(x=>x.id===id);
-  const inList=watchlist.includes(id);
-  // Optimistic update
-  if(inList){watchlist=watchlist.filter(x=>x!==id);}else{watchlist.push(id);}
-  updateBadges();
-  // Update DOM
-  document.querySelectorAll(`[data-star="${id}"]`).forEach(b=>{
-    b.textContent=watchlist.includes(id)?'★':'☆';
-    b.style.color=watchlist.includes(id)?'#ffcc00':'var(--text2)';
-  });
-  document.querySelectorAll(`[data-card="${id}"]`).forEach(c=>{
-    c.className='asset-card'+(watchlist.includes(id)?' in-watch':'');
-  });
-  // Sync to backend
-  try{
-    if(inList){
-      await apiCall(`/api/watchlist/${id}`,'DELETE',null,authToken);
-      showNotif('✓ Removed',a.name+' removed from watchlist');
-    }else{
-      await apiCall(`/api/watchlist/${id}`,'POST',null,authToken);
-      showNotif('★ Added',a.name+' added to watchlist');
+  // ══════════════════════════════════════════════════
+  // AUTH
+  // ══════════════════════════════════════════════════
+  function switchAuthTab(tab){
+    el('tab-login').classList.toggle('active',tab==='login');
+    el('tab-register').classList.toggle('active',tab==='register');
+    el('login-form').style.display=tab==='login'?'':'none';
+    el('register-form').style.display=tab==='register'?'':'none';
+    el('auth-error').classList.remove('show');
+  }
+  function showAuthError(msg){el('auth-error').textContent=msg;el('auth-error').classList.add('show');}
+  function setAuthLoading(btnId,loading){const b=el(btnId);b.disabled=loading;b.textContent=loading?'Đang xử lý...':btnId==='login-btn'?'Đang nhập':'Tạo tài khoản';}
+
+  async function apiCall(path,method='GET',body=null,token=null){
+    const opts={method,headers:{'Content-Type':'application/json'}};
+    if(token)opts.headers['Authorization']='Bearer '+token;
+    if(body)opts.body=JSON.stringify(body);
+    const res=await fetch(BACKEND+path,opts);
+    return res.json();
+  }
+
+  async function doLogin(){
+    const email=el('l-email').value.trim(),pass=el('l-pass').value;
+    if(!email||!pass){showAuthError('Vui lòng điền đầy đủ thông tin');return;}
+    setAuthLoading('login-btn',true);
+    try{
+      const d=await apiCall('/api/auth/login','POST',{email,password:pass});
+      if(!d.ok){showAuthError(d.error||'Đăng nhập thất bại');return;}
+      await onAuthSuccess(d.token,d.user);
+    }catch(e){showAuthError('Không thể kết nối backend. Chạy: node server.js');}
+    finally{setAuthLoading('login-btn',false);}
+  }
+
+  async function doRegister(){
+    const name=el('r-name').value.trim(),email=el('r-email').value.trim(),pass=el('r-pass').value;
+    if(!email||!pass){showAuthError('Email và password là bắt buộc');return;}
+    setAuthLoading('register-btn',true);
+    try{
+      const d=await apiCall('/api/auth/register','POST',{name,email,password:pass});
+      if(!d.ok){showAuthError(d.error||'Đăng ký thất bại');return;}
+      showNotif('🎉 Tài khoản đã tạo','Chào mừng '+d.user.name+'!');
+      await onAuthSuccess(d.token,d.user);
+    }catch(e){showAuthError('Không thể kết nối backend. Chạy: node server.js');}
+    finally{setAuthLoading('register-btn',false);}
+  }
+
+  async function doDemo(){
+    // Tạo hoặc login demo account
+    try{
+      let d=await apiCall('/api/auth/login','POST',{email:'demo@spt.com',password:'demo123'});
+      if(!d.ok){
+        d=await apiCall('/api/auth/register','POST',{name:'Demo User',email:'demo@spt.com',password:'demo123'});
+      }
+      if(!d.ok){showAuthError('Demo thất bại — chạy server.js trước');return;}
+      await onAuthSuccess(d.token,d.user);
+    }catch(e){showAuthError('Không thể kết nối backend. Chạy: node server.js');}
+  }
+
+  async function onAuthSuccess(token,user){
+    authToken=token;currentUser=user;
+    localStorage.setItem('spt_token',token);
+    localStorage.setItem('spt_user',JSON.stringify(user));
+    await loadUserData();
+    await showApp();
+  }
+
+  async function loadUserData(){
+    try{
+      const [wl,al,da,ha]=await Promise.all([
+        apiCall('/api/watchlist','GET',null,authToken),
+        apiCall('/api/alerts','GET',null,authToken),
+        apiCall('/api/ai/assets','GET',null,authToken),
+        apiCall('/api/assets/hidden','GET',null,authToken),
+      ]);
+      if(wl.ok)watchlist=wl.watchlist;
+      if(al.ok)alerts=al.alerts;
+      if(da.ok){ dynamicAssets=da.assets; injectDynamicAssets(); }
+      if(ha.ok) hiddenAssets=ha.hiddenAssets||[];
+    }catch(e){console.warn('Load user data failed:',e);}
+  }
+
+  function doLogout(){
+    authToken=null;currentUser=null;watchlist=[];alerts=[];
+    localStorage.removeItem('spt_token');localStorage.removeItem('spt_user');
+    el('app-screen').classList.remove('show');el('app-screen').style.display='none';
+    el('auth-screen').style.display='flex';
+    el('l-email').value='';el('l-pass').value='';
+    showNotif('↩ Đã đăng xuất','Hẹn gặp lại!');
+  }
+
+  // ── Auto login từ localStorage ──────────────────────────────
+  async function tryAutoLogin(){
+    const token=localStorage.getItem('spt_token');
+    const user=localStorage.getItem('spt_user');
+    if(!token||!user)return false; // Thêm false ở đây
+    try{
+      const d=await apiCall('/api/auth/me','GET',null,token);
+      if(d.ok){
+        authToken=token;currentUser=d.user;
+        await loadUserData();
+        await showApp();
+        return true;
+      }
+      // Chỉ xoá token khi server xác nhận token sai/hết hạn
+      localStorage.removeItem('spt_token');
+      localStorage.removeItem('spt_user');
+    }catch(e){
+      // NẾU LỖI MẠNG (Server chưa lên kịp) -> KHÔNG ĐƯỢC XOÁ TOKEN
+      console.warn('Đang chờ server khởi động...');
     }
-  }catch(e){console.warn('Watchlist sync failed:',e);}
-  if(currentPage==='watchlist')renderPage();
-}
+    return false;
+  }
 
-async function createAlert(assetId,condition,targetPrice){
-  const a=ASSETS.find(x=>x.id===assetId);if(!a)return;
-  try{
-    const d=await apiCall('/api/alerts','POST',{assetId,assetName:a.name,condition,targetPrice:parseFloat(targetPrice),currency:a.cur},authToken);
-    if(d.ok){alerts.push(d.alert);updateBadges();showNotif('⚡ Alert created',`${a.name} ${condition} ${fmtPrice(targetPrice,a.cur)}`);if(currentPage==='alerts')renderPage();}
-  }catch(e){console.warn('Create alert failed:',e);}
-}
+  async function showApp(){
+    el('auth-screen').style.display='none';
+    el('app-screen').style.display='flex';
+    el('app-screen').classList.add('show');
+    const initials=(currentUser.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    el('user-avatar').textContent=initials;
+    el('user-name').textContent=currentUser.name||currentUser.email;
+    el('user-email').textContent=currentUser.email;
+    updateBadges();
+    buildTicker();
+    // Fetch giá thật TRƯỚC khi render → tất cả cards dùng giá mới nhất
+    await fetchPricesFromBackend();
+    buildTicker();
+    renderPage();
+    if(!window._pollInterval)window._pollInterval=setInterval(fetchAndUpdate,30000);
+  }
 
-async function removeAlert(id){
-  alerts=alerts.filter(a=>a.id!==id);
-  try{await apiCall(`/api/alerts/${id}`,'DELETE',null,authToken);}catch(e){}
-  updateBadges();if(currentPage==='alerts')renderPage();
-}
-
-// ══════════════════════════════════════════════════
-// PRICE DATA
-// ══════════════════════════════════════════════════
-async function fetchPricesFromBackend(){
-  try{
-    const d=await fetch(`${BACKEND}/api/prices`,{signal:AbortSignal.timeout(5000)}).then(r=>r.json());
-    if(!d.ok)throw new Error('bad');
-    for(const[idStr,p]of Object.entries(d.prices)){
-      const id=parseInt(idStr),a=ASSETS.find(x=>x.id===id);if(!a)continue;
-      a.prev=a.price;a.price=p.price;lastPriceSources[id]=p.source;
-      if(p.change24h&&p.change24h!==0)a.prev=a.price/(1+p.change24h/100);
-    }
-    const s=d.status||{};
-    updateApiDot('crypto',s.crypto);updateApiDot('currency',s.currency);updateApiDot('metal',s.metal);
-    if(d.updatedAt)el('last-update').textContent='Updated: '+timeAgo(d.updatedAt);
-    return true;
-  }catch(e){return false;}
-}
-
-async function fetchHistoryFromBackend(assetId,period){
-  try{
-    const d=await fetch(`${BACKEND}/api/history/${assetId}?period=${period}`,{signal:AbortSignal.timeout(8000)}).then(r=>r.json());
-    if(d.ok&&d.data)return d.data;
-  }catch(e){}
-  const a=ASSETS.find(x=>x.id===assetId);
-  const daysN={'24h':1,'7d':7,'30d':30,'1y':365}[period]||7;
-  return genHistory(a?.price||1000,daysN,a?.cat==='product'?.005:.03);
-}
-
-async function fetchAndUpdate(){
-  await fetchPricesFromBackend();
-  buildTicker();
-  // Check alerts
-  alerts.forEach(al=>{
-    const a=ASSETS.find(x=>x.id===al.assetId);if(!a)return;
-    if((al.condition==='above'&&a.price>al.targetPrice)||(al.condition==='below'&&a.price<al.targetPrice))
-      showNotif(`🔔 Alert: ${a.name}`,`${a.sym} ${al.condition} ${fmtPrice(al.targetPrice,al.cur)}`,'alert');
-  });
-  // Update ALL price elements via data-price-id (handles duplicate asset cards)
-  ASSETS.forEach(a=>{
-    const ch=pct(a.price,a.prev);
-    // querySelectorAll finds ALL elements with this data attr (watchlist + all assets)
-    document.querySelectorAll(`[data-price-id="${a.id}"]`).forEach(el=>{
-      el.textContent=fmtPrice(a.price,a.cur);
+  // ══════════════════════════════════════════════════
+  // WATCHLIST & ALERTS (synced với backend)
+  // ══════════════════════════════════════════════════
+  async function toggleWatch(id){
+    const a=ASSETS.find(x=>x.id===id);
+    const inList=watchlist.includes(id);
+    // Optimistic update
+    if(inList){watchlist=watchlist.filter(x=>x!==id);}else{watchlist.push(id);}
+    updateBadges();
+    // Update DOM
+    document.querySelectorAll(`[data-star="${id}"]`).forEach(b=>{
+      b.textContent=watchlist.includes(id)?'★':'☆';
+      b.style.color=watchlist.includes(id)?'#ffcc00':'var(--text2)';
     });
-    document.querySelectorAll(`[data-chg-id="${a.id}"]`).forEach(el=>{
-      el.textContent=(ch>=0?'▲':'▼')+' '+Math.abs(ch).toFixed(2)+'%';
-      el.className='ac-change '+(ch>=0?'up':'down');
+    document.querySelectorAll(`[data-card="${id}"]`).forEach(c=>{
+      c.className='asset-card'+(watchlist.includes(id)?' in-watch':'');
     });
-  });
-  updateStatCards();
-}
+    // Sync to backend
+    try{
+      if(inList){
+        await apiCall(`/api/watchlist/${id}`,'DELETE',null,authToken);
+        showNotif('✓ Removed',a.name+' removed from watchlist');
+      }else{
+        await apiCall(`/api/watchlist/${id}`,'POST',null,authToken);
+        showNotif('★ Added',a.name+' added to watchlist');
+      }
+    }catch(e){console.warn('Watchlist sync failed:',e);}
+    if(currentPage==='watchlist')renderPage();
+  }
 
-async function manualRefresh(){
-  showNotif('↻ Refreshing','Fetching latest prices...');
-  try{await fetch(`${BACKEND}/api/refresh`);await new Promise(r=>setTimeout(r,1500));await fetchAndUpdate();}
-  catch(e){showNotif('⚠️ Error','Backend offline');}
-}
+  async function createAlert(assetId,condition,targetPrice){
+    const a=ASSETS.find(x=>x.id===assetId);if(!a)return;
+    try{
+      const d=await apiCall('/api/alerts','POST',{assetId,assetName:a.name,condition,targetPrice:parseFloat(targetPrice),currency:a.cur},authToken);
+      if(d.ok){alerts.push(d.alert);updateBadges();showNotif('⚡ Alert created',`${a.name} ${condition} ${fmtPrice(targetPrice,a.cur)}`);if(currentPage==='alerts')renderPage();}
+    }catch(e){console.warn('Create alert failed:',e);}
+  }
 
-// ── API STATUS DOTS ─────────────────────────────────────────
-function updateApiDot(type,status){
-  const dot=el('dot-'+type),lbl=el('lbl-'+type);if(!dot)return;
-  dot.className='api-dot';if(status)dot.className='api-dot '+status;
-  const text={crypto:{ok:'CoinGecko ✓',error:'CoinGecko ✗',loading:'CoinGecko…',mock:'Crypto mock'},
-    currency:{ok:'ExchangeRate ✓',error:'ExchangeRate ✗',loading:'ExchangeRate…',fallback:'Frankfurter ↩'},
-    metal:{ok:'GoldAPI ✓',error:'GoldAPI ✗',mock:'Metal mock',idle:'GoldAPI (no key)'}};
-  if(lbl&&text[type]&&text[type][status])lbl.textContent=text[type][status];
-}
+  async function removeAlert(id){
+    alerts=alerts.filter(a=>a.id!==id);
+    try{await apiCall(`/api/alerts/${id}`,'DELETE',null,authToken);}catch(e){}
+    updateBadges();if(currentPage==='alerts')renderPage();
+  }
 
-function buildTicker(){
-  const track=el('ticker-track');
-  const items=[...ASSETS,...ASSETS];
-  track.innerHTML=items.map(a=>{const ch=pct(a.price,a.prev);return`<div class="t-item"><span class="t-sym">${a.sym}</span><span>${fmtPrice(a.price,a.cur)}</span><span class="${ch>=0?'up':'down'}">${ch>=0?'+':''}${ch.toFixed(2)}%</span></div>`;}).join('');
-}
+  // ══════════════════════════════════════════════════
+  // PRICE DATA
+  // ══════════════════════════════════════════════════
+  async function fetchPricesFromBackend(){
+    try{
+      const d=await fetch(`${BACKEND}/api/prices`,{signal:AbortSignal.timeout(5000)}).then(r=>r.json());
+      if(!d.ok)throw new Error('bad');
+      for(const[idStr,p]of Object.entries(d.prices)){
+        const id=parseInt(idStr),a=ASSETS.find(x=>x.id===id);if(!a)continue;
+        a.prev=a.price;a.price=p.price;lastPriceSources[id]=p.source;
+        if(p.change24h&&p.change24h!==0)a.prev=a.price/(1+p.change24h/100);
+      }
+      const s=d.status||{};
+      updateApiDot('crypto',s.crypto);updateApiDot('currency',s.currency);updateApiDot('metal',s.metal);
+      if(d.updatedAt)el('last-update').textContent='Updated: '+timeAgo(d.updatedAt);
+      return true;
+    }catch(e){return false;}
+  }
 
-// ── SPARKLINE ──────────────────────────────────────────────
-function drawSparkline(canvasId,data){
-  const canvas=el(canvasId);if(!canvas)return;
-  if(sparkCharts[canvasId]){sparkCharts[canvasId].destroy();delete sparkCharts[canvasId];}
-  const ctx=canvas.getContext('2d');
-  const isUp=data[data.length-1].price>=data[0].price;
-  const lc=isUp?'#00ff88':'#ff3355';
-  const grad=ctx.createLinearGradient(0,0,0,40);
-  grad.addColorStop(0,isUp?'rgba(0,255,136,.3)':'rgba(255,51,85,.3)');
-  grad.addColorStop(1,'rgba(0,0,0,0)');
-  sparkCharts[canvasId]=new Chart(ctx,{type:'line',data:{labels:data.map(()=>''),datasets:[{data:data.map(d=>d.price),borderColor:lc,backgroundColor:grad,fill:true,tension:.4,pointRadius:0,borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{x:{display:false},y:{display:false}},animation:false}});
-}
+  async function fetchHistoryFromBackend(assetId,period){
+    try{
+      const d=await fetch(`${BACKEND}/api/history/${assetId}?period=${period}`,{signal:AbortSignal.timeout(8000)}).then(r=>r.json());
+      if(d.ok&&d.data)return d.data;
+    }catch(e){}
+    const a=ASSETS.find(x=>x.id===assetId);
+    const daysN={'24h':1,'7d':7,'30d':30,'1y':365}[period]||7;
+    return genHistory(a?.price||1000,daysN,a?.cat==='product'?.005:.03);
+  }
 
-// ── ASSET CARD ────────────────────────────────────────────
-function assetCard(a,ctx){
-  const ch=pct(a.price,a.prev),isUp=ch>=0,inW=watchlist.includes(a.id);
-  const seq=++_cardSeq,cid=`spark-${a.id}-${ctx||'x'}-${seq}`;
-  const div=document.createElement('div');
-  div.className='asset-card'+(inW?' in-watch':'');
-  div.setAttribute('data-card',a.id);
-  const src=lastPriceSources[a.id];
-  const srcTag=src?`<span class="source-tag src-${src}">${src}</span>`:'';
-  div.innerHTML=`
+  async function fetchAndUpdate(){
+    await fetchPricesFromBackend();
+    buildTicker();
+    // Check alerts
+    alerts.forEach(al=>{
+      const a=ASSETS.find(x=>x.id===al.assetId);if(!a)return;
+      if((al.condition==='above'&&a.price>al.targetPrice)||(al.condition==='below'&&a.price<al.targetPrice))
+        showNotif(`🔔 Alert: ${a.name}`,`${a.sym} ${al.condition} ${fmtPrice(al.targetPrice,al.cur)}`,'alert');
+    });
+    // Update ALL price elements via data-price-id (handles duplicate asset cards)
+    ASSETS.forEach(a=>{
+      const ch=pct(a.price,a.prev);
+      // querySelectorAll finds ALL elements with this data attr (watchlist + all assets)
+      document.querySelectorAll(`[data-price-id="${a.id}"]`).forEach(el=>{
+        el.textContent=fmtPrice(a.price,a.cur);
+      });
+      document.querySelectorAll(`[data-chg-id="${a.id}"]`).forEach(el=>{
+        el.textContent=(ch>=0?'▲':'▼')+' '+Math.abs(ch).toFixed(2)+'%';
+        el.className='ac-change '+(ch>=0?'up':'down');
+      });
+    });
+    updateStatCards();
+  }
+
+  async function manualRefresh(){
+    showNotif('↻ Refreshing','Fetching latest prices...');
+    try{await fetch(`${BACKEND}/api/refresh`);await new Promise(r=>setTimeout(r,1500));await fetchAndUpdate();}
+    catch(e){showNotif('⚠️ Error','Backend offline');}
+  }
+
+  // ── API STATUS DOTS ─────────────────────────────────────────
+  function updateApiDot(type,status){
+    const dot=el('dot-'+type),lbl=el('lbl-'+type);if(!dot)return;
+    dot.className='api-dot';if(status)dot.className='api-dot '+status;
+    const text={crypto:{ok:'CoinGecko ✓',error:'CoinGecko ✗',loading:'CoinGecko…',mock:'Crypto mock'},
+      currency:{ok:'ExchangeRate ✓',error:'ExchangeRate ✗',loading:'ExchangeRate…',fallback:'Frankfurter ↩'},
+      metal:{ok:'GoldAPI ✓',error:'GoldAPI ✗',mock:'Metal mock',idle:'GoldAPI (no key)'}};
+    if(lbl&&text[type]&&text[type][status])lbl.textContent=text[type][status];
+  }
+
+  function buildTicker(){
+    const track=el('ticker-track');
+    const items=[...ASSETS,...ASSETS];
+    track.innerHTML=items.map(a=>{const ch=pct(a.price,a.prev);return`<div class="t-item"><span class="t-sym">${a.sym}</span><span>${fmtPrice(a.price,a.cur)}</span><span class="${ch>=0?'up':'down'}">${ch>=0?'+':''}${ch.toFixed(2)}%</span></div>`;}).join('');
+  }
+
+  // ── SPARKLINE ──────────────────────────────────────────────
+  function drawSparkline(canvasId,data){
+    const canvas=el(canvasId);if(!canvas)return;
+    if(sparkCharts[canvasId]){sparkCharts[canvasId].destroy();delete sparkCharts[canvasId];}
+    const ctx=canvas.getContext('2d');
+    const isUp=data[data.length-1].price>=data[0].price;
+    const lc=isUp?'#00ff88':'#ff3355';
+    const grad=ctx.createLinearGradient(0,0,0,40);
+    grad.addColorStop(0,isUp?'rgba(0,255,136,.3)':'rgba(255,51,85,.3)');
+    grad.addColorStop(1,'rgba(0,0,0,0)');
+    sparkCharts[canvasId]=new Chart(ctx,{type:'line',data:{labels:data.map(()=>''),datasets:[{data:data.map(d=>d.price),borderColor:lc,backgroundColor:grad,fill:true,tension:.4,pointRadius:0,borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{x:{display:false},y:{display:false}},animation:false}});
+  }
+
+  // ── ASSET CARD ────────────────────────────────────────────
+  function assetCard(a,ctx){
+    const ch=pct(a.price,a.prev),isUp=ch>=0,inW=watchlist.includes(a.id);
+    const seq=++_cardSeq,cid=`spark-${a.id}-${ctx||'x'}-${seq}`;
+    const div=document.createElement('div');
+    div.className='asset-card'+(inW?' in-watch':'');
+    div.setAttribute('data-card',a.id);
+    const src=lastPriceSources[a.id];
+    const srcTag=src?`<span class="source-tag src-${src}">${src}</span>`:'';
+    div.innerHTML=`
     <div class="ac-head">
       <div class="ac-info">
         <div class="ac-icon" style="background:${a.color}22">${a.icon}</div>
@@ -686,136 +686,136 @@ function assetCard(a,ctx){
     </div>
     <div class="sparkline-wrap"><canvas id="${cid}" height="38"></canvas></div>
   `;
-  div.onclick=()=>openModal(a.id);
-  fetchHistoryFromBackend(a.id,'24h').then(hist=>{if(el(cid))drawSparkline(cid,hist);});
-  return div;
-}
+    div.onclick=()=>openModal(a.id);
+    fetchHistoryFromBackend(a.id,'24h').then(hist=>{if(el(cid))drawSparkline(cid,hist);});
+    return div;
+  }
 
-// ── NAVIGATION ───────────────────────────────────────────
-const PAGE_TITLES={dashboard:'Dashboard',watchlist:'Watchlist',alerts:'Price Alerts',search:'Search',heatmap:'Heatmap',compare:'Compare',ai:'🤖 AI Add Asset'};
-function navigate(page){
-  currentPage=page;
-  document.querySelectorAll('.nav-item[data-page]').forEach(n=>n.classList.toggle('active',n.dataset.page===page));
-  el('page-title').textContent=PAGE_TITLES[page]||page;
-  renderPage();closeSidebar();
-}
-function filterCat(cat){currentCat=cat;navigate('dashboard');}
-function toggleSidebar(){el('sidebar').classList.toggle('open');el('sidebar-mask').classList.toggle('show');}
-function closeSidebar(){el('sidebar').classList.remove('open');el('sidebar-mask').classList.remove('show');}
-function toggleTheme(){isDark=!isDark;document.documentElement.setAttribute('data-theme',isDark?'dark':'light');el('theme-btn').textContent=isDark?'☀️ Light Mode':'🌙 Dark Mode';}
-function handleSearch(q){if(currentPage!=='search')navigate('search');else renderSearch(el('page'),q);}
+  // ── NAVIGATION ───────────────────────────────────────────
+  const PAGE_TITLES={dashboard:'Dashboard',watchlist:'Watchlist',alerts:'Price Alerts',search:'Search',heatmap:'Heatmap',compare:'Compare',ai:'🤖 AI Add Asset'};
+  function navigate(page){
+    currentPage=page;
+    document.querySelectorAll('.nav-item[data-page]').forEach(n=>n.classList.toggle('active',n.dataset.page===page));
+    el('page-title').textContent=PAGE_TITLES[page]||page;
+    renderPage();closeSidebar();
+  }
+  function filterCat(cat){currentCat=cat;navigate('dashboard');}
+  function toggleSidebar(){el('sidebar').classList.toggle('open');el('sidebar-mask').classList.toggle('show');}
+  function closeSidebar(){el('sidebar').classList.remove('open');el('sidebar-mask').classList.remove('show');}
+  function toggleTheme(){isDark=!isDark;document.documentElement.setAttribute('data-theme',isDark?'dark':'light');el('theme-btn').textContent=isDark?'☀️ Light Mode':'🌙 Dark Mode';}
+  function handleSearch(q){if(currentPage!=='search')navigate('search');else renderSearch(el('page'),q);}
 
-function updateBadges(){
-  el('nb-watch').textContent=watchlist.length;el('nb-alerts').textContent=alerts.length;
-  if(el('nb-dynamic'))el('nb-dynamic').textContent=dynamicAssets.length;
-  el('cnt-all').textContent=ASSETS.length;
-  ['crypto','currency','metal','product'].forEach(c=>el('cnt-'+c).textContent=ASSETS.filter(a=>a.cat===c).length);
-}
+  function updateBadges(){
+    el('nb-watch').textContent=watchlist.length;el('nb-alerts').textContent=alerts.length;
+    if(el('nb-dynamic'))el('nb-dynamic').textContent=dynamicAssets.length;
+    el('cnt-all').textContent=ASSETS.length;
+    ['crypto','currency','metal','product'].forEach(c=>el('cnt-'+c).textContent=ASSETS.filter(a=>a.cat===c).length);
+  }
 
-function updateStatCards(){
-  const changes=visibleAssets('all').map(a=>({...a,ch:pct(a.price,a.prev)}));
-  const gainer=[...changes].sort((a,b)=>b.ch-a.ch)[0];
-  const loser=[...changes].sort((a,b)=>a.ch-b.ch)[0];
-  const gEl=document.querySelector('[data-stat="gainer-sym"]');const gSub=document.querySelector('[data-stat="gainer-ch"]');
-  const lEl=document.querySelector('[data-stat="loser-sym"]');const lSub=document.querySelector('[data-stat="loser-ch"]');
-  if(gEl)gEl.textContent=gainer.sym;if(gSub)gSub.textContent='+'+gainer.ch.toFixed(2)+'%';
-  if(lEl)lEl.textContent=loser.sym;if(lSub)lSub.textContent=loser.ch.toFixed(2)+'%';
-}
+  function updateStatCards(){
+    const changes=visibleAssets('all').map(a=>({...a,ch:pct(a.price,a.prev)}));
+    const gainer=[...changes].sort((a,b)=>b.ch-a.ch)[0];
+    const loser=[...changes].sort((a,b)=>a.ch-b.ch)[0];
+    const gEl=document.querySelector('[data-stat="gainer-sym"]');const gSub=document.querySelector('[data-stat="gainer-ch"]');
+    const lEl=document.querySelector('[data-stat="loser-sym"]');const lSub=document.querySelector('[data-stat="loser-ch"]');
+    if(gEl)gEl.textContent=gainer.sym;if(gSub)gSub.textContent='+'+gainer.ch.toFixed(2)+'%';
+    if(lEl)lEl.textContent=loser.sym;if(lSub)lSub.textContent=loser.ch.toFixed(2)+'%';
+  }
 
-// ══════════════════════════════════════════════════
-// PAGES
-// ══════════════════════════════════════════════════
-// Returns ASSETS filtered by category and excluding hidden ones
-function visibleAssets(cat) {
-  const list = cat && cat !== 'all' ? ASSETS.filter(a=>a.cat===cat) : ASSETS;
-  return list.filter(a => !hiddenAssets.includes(a.id));
-}
+  // ══════════════════════════════════════════════════
+  // PAGES
+  // ══════════════════════════════════════════════════
+  // Returns ASSETS filtered by category and excluding hidden ones
+  function visibleAssets(cat) {
+    const list = cat && cat !== 'all' ? ASSETS.filter(a=>a.cat===cat) : ASSETS;
+    return list.filter(a => !hiddenAssets.includes(a.id));
+  }
 
-function renderPage(sq){
-  _cardSeq=0;
-  const page=el('page');page.innerHTML='';
-  Object.keys(sparkCharts).forEach(k=>{try{sparkCharts[k].destroy();}catch(e){} delete sparkCharts[k];});
-  if(currentPage==='dashboard')renderDashboard(page);
-  else if(currentPage==='watchlist')renderWatchlist(page);
-  else if(currentPage==='alerts')renderAlerts(page);
-  else if(currentPage==='search')renderSearch(page,el('search-input').value);
-  else if(currentPage==='heatmap')renderHeatmap(page);
-  else if(currentPage==='compare')renderCompare(page);
-  else if(currentPage==='ai')renderAIPage(page);
-}
+  function renderPage(sq){
+    _cardSeq=0;
+    const page=el('page');page.innerHTML='';
+    Object.keys(sparkCharts).forEach(k=>{try{sparkCharts[k].destroy();}catch(e){} delete sparkCharts[k];});
+    if(currentPage==='dashboard')renderDashboard(page);
+    else if(currentPage==='watchlist')renderWatchlist(page);
+    else if(currentPage==='alerts')renderAlerts(page);
+    else if(currentPage==='search')renderSearch(page,el('search-input').value);
+    else if(currentPage==='heatmap')renderHeatmap(page);
+    else if(currentPage==='compare')renderCompare(page);
+    else if(currentPage==='ai')renderAIPage(page);
+  }
 
-function renderDashboard(page){
-  const list=visibleAssets(currentCat);
-  const changes=visibleAssets('all').map(a=>({...a,ch:pct(a.price,a.prev)}));
-  const gainer=[...changes].sort((a,b)=>b.ch-a.ch)[0];
-  const loser=[...changes].sort((a,b)=>a.ch-b.ch)[0];
-  const watched=ASSETS.filter(a=>watchlist.includes(a.id));
+  function renderDashboard(page){
+    const list=visibleAssets(currentCat);
+    const changes=visibleAssets('all').map(a=>({...a,ch:pct(a.price,a.prev)}));
+    const gainer=[...changes].sort((a,b)=>b.ch-a.ch)[0];
+    const loser=[...changes].sort((a,b)=>a.ch-b.ch)[0];
+    const watched=ASSETS.filter(a=>watchlist.includes(a.id));
 
-  const stats=document.createElement('div');stats.className='stats-grid';
-  stats.innerHTML=`
+    const stats=document.createElement('div');stats.className='stats-grid';
+    stats.innerHTML=`
     <div class="stat-card sc-green"><div class="stat-label">Tracked Assets</div><div class="stat-val">${ASSETS.length}</div><div class="stat-sub">4 categories</div></div>
     <div class="stat-card sc-blue"><div class="stat-label">Watchlist</div><div class="stat-val" data-stat="wl-count">${watchlist.length}</div><div class="stat-sub">${currentUser?.name||'You'}</div></div>
     <div class="stat-card sc-green"><div class="stat-label">Top Gainer</div><div class="stat-val" style="font-size:17px" data-stat="gainer-sym">${gainer.sym}</div><div class="stat-sub up" data-stat="gainer-ch">+${gainer.ch.toFixed(2)}%</div></div>
     <div class="stat-card sc-red"><div class="stat-label">Top Loser</div><div class="stat-val" style="font-size:17px" data-stat="loser-sym">${loser.sym}</div><div class="stat-sub down" data-stat="loser-ch">${loser.ch.toFixed(2)}%</div></div>
   `;
-  page.appendChild(stats);
+    page.appendChild(stats);
 
-  const cf=document.createElement('div');cf.className='cat-filters';
-  [['all','⬛ All'],['crypto','₿ Crypto'],['currency','$ Currency'],['metal','🥇 Metals'],['product','📦 Products']].forEach(([c,label])=>{
-    const b=document.createElement('button');b.className='cat-btn'+(currentCat===c?' active':'');b.textContent=label;b.onclick=()=>filterCat(c);cf.appendChild(b);
-  });
-  page.appendChild(cf);
+    const cf=document.createElement('div');cf.className='cat-filters';
+    [['all','⬛ All'],['crypto','₿ Crypto'],['currency','$ Currency'],['metal','🥇 Metals'],['product','📦 Products']].forEach(([c,label])=>{
+      const b=document.createElement('button');b.className='cat-btn'+(currentCat===c?' active':'');b.textContent=label;b.onclick=()=>filterCat(c);cf.appendChild(b);
+    });
+    page.appendChild(cf);
 
-  if(watched.length>0&&currentCat==='all'){
+    if(watched.length>0&&currentCat==='all'){
+      const sh=document.createElement('div');sh.className='sec-hdr';
+      sh.innerHTML=`<div class="sec-title">My Watchlist</div><div class="live-dot">LIVE</div>`;
+      page.appendChild(sh);
+      const wg=document.createElement('div');wg.className='assets-grid';wg.style.marginBottom='22px';
+      watched.forEach(a=>wg.appendChild(assetCard(a,'wl')));page.appendChild(wg);
+    }
+
+    const sh2=document.createElement('div');sh2.className='sec-hdr';
+    sh2.innerHTML=`<div class="sec-title">All Assets</div><div class="live-dot">LIVE</div>`;
+    page.appendChild(sh2);
+    const ag=document.createElement('div');ag.className='assets-grid';
+    list.forEach(a=>ag.appendChild(assetCard(a,'all')));page.appendChild(ag);
+  }
+
+  function renderWatchlist(page){
+    const watched=ASSETS.filter(a=>watchlist.includes(a.id));
+    if(!watched.length){
+      page.innerHTML=`<div class="empty"><div class="ei">☆</div><h3>Watchlist trống</h3><p>Nhấn ☆ trên bất kỳ asset nào để thêm vào watchlist cá nhân.</p></div>`;
+      return;
+    }
     const sh=document.createElement('div');sh.className='sec-hdr';
-    sh.innerHTML=`<div class="sec-title">My Watchlist</div><div class="live-dot">LIVE</div>`;
+    sh.innerHTML=`<div class="sec-title">Watchlist của ${currentUser?.name||'bạn'} (${watched.length})</div><div class="live-dot">LIVE</div>`;
     page.appendChild(sh);
-    const wg=document.createElement('div');wg.className='assets-grid';wg.style.marginBottom='22px';
-    watched.forEach(a=>wg.appendChild(assetCard(a,'wl')));page.appendChild(wg);
+    const g=document.createElement('div');g.className='assets-grid';
+    watched.forEach(a=>g.appendChild(assetCard(a,'wlp')));page.appendChild(g);
   }
 
-  const sh2=document.createElement('div');sh2.className='sec-hdr';
-  sh2.innerHTML=`<div class="sec-title">All Assets</div><div class="live-dot">LIVE</div>`;
-  page.appendChild(sh2);
-  const ag=document.createElement('div');ag.className='assets-grid';
-  list.forEach(a=>ag.appendChild(assetCard(a,'all')));page.appendChild(ag);
-}
-
-function renderWatchlist(page){
-  const watched=ASSETS.filter(a=>watchlist.includes(a.id));
-  if(!watched.length){
-    page.innerHTML=`<div class="empty"><div class="ei">☆</div><h3>Watchlist trống</h3><p>Nhấn ☆ trên bất kỳ asset nào để thêm vào watchlist cá nhân.</p></div>`;
-    return;
-  }
-  const sh=document.createElement('div');sh.className='sec-hdr';
-  sh.innerHTML=`<div class="sec-title">Watchlist của ${currentUser?.name||'bạn'} (${watched.length})</div><div class="live-dot">LIVE</div>`;
-  page.appendChild(sh);
-  const g=document.createElement('div');g.className='assets-grid';
-  watched.forEach(a=>g.appendChild(assetCard(a,'wlp')));page.appendChild(g);
-}
-
-function renderAlerts(page){
-  const card=document.createElement('div');card.className='card';card.style.marginBottom='20px';
-  card.innerHTML=`<div class="card-title">⚡ Tạo Alert mới</div>
+  function renderAlerts(page){
+    const card=document.createElement('div');card.className='card';card.style.marginBottom='20px';
+    card.innerHTML=`<div class="card-title">⚡ Tạo Alert mới</div>
     <div class="form-row">
       <select class="form-select" id="al-asset"><option value="">Chọn asset...</option>${ASSETS.map(a=>`<option value="${a.id}">${a.name} (${a.sym})</option>`).join('')}</select>
       <select class="form-select" id="al-cond"><option value="above">tăng trên</option><option value="below">giảm dưới</option></select>
       <input class="form-input" type="number" id="al-price" placeholder="Giá mục tiêu..." style="width:160px"/>
       <button class="btn btn-primary" onclick="createAlertFromForm()">+ Tạo Alert</button>
     </div>`;
-  page.appendChild(card);
+    page.appendChild(card);
 
-  const sh=document.createElement('div');sh.style.marginBottom='12px';
-  sh.innerHTML=`<div class="sec-title">Alerts của bạn (${alerts.length})</div>`;page.appendChild(sh);
+    const sh=document.createElement('div');sh.style.marginBottom='12px';
+    sh.innerHTML=`<div class="sec-title">Alerts của bạn (${alerts.length})</div>`;page.appendChild(sh);
 
-  if(!alerts.length){page.insertAdjacentHTML('beforeend',`<div class="empty"><div class="ei">🔔</div><h3>Chưa có alert nào</h3><p>Tạo alert để được thông báo khi giá đạt mục tiêu.</p></div>`);return;}
+    if(!alerts.length){page.insertAdjacentHTML('beforeend',`<div class="empty"><div class="ei">🔔</div><h3>Chưa có alert nào</h3><p>Tạo alert để được thông báo khi giá đạt mục tiêu.</p></div>`);return;}
 
-  const list=document.createElement('div');
-  alerts.forEach(al=>{
-    const a=ASSETS.find(x=>x.id===al.assetId);
-    const triggered=a&&((al.condition==='above'&&a.price>al.targetPrice)||(al.condition==='below'&&a.price<al.targetPrice));
-    const row=document.createElement('div');row.className='alert-item'+(triggered?' triggered':'');
-    row.innerHTML=`
+    const list=document.createElement('div');
+    alerts.forEach(al=>{
+      const a=ASSETS.find(x=>x.id===al.assetId);
+      const triggered=a&&((al.condition==='above'&&a.price>al.targetPrice)||(al.condition==='below'&&a.price<al.targetPrice));
+      const row=document.createElement('div');row.className='alert-item'+(triggered?' triggered':'');
+      row.innerHTML=`
       <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">
         <span style="font-weight:700">${al.assetName}</span>
         <span class="cond-badge ${al.condition}">${al.condition.toUpperCase()}</span>
@@ -826,101 +826,101 @@ function renderAlerts(page){
         ${a?`<span style="font-size:11px;color:var(--text2);font-family:'JetBrains Mono'">Now: ${fmtPrice(a.price,a.cur)}</span>`:''}
         <button class="btn btn-danger btn-sm" onclick="removeAlert(${al.id})">Remove</button>
       </div>`;
-    list.appendChild(row);
-  });
-  page.appendChild(list);
-}
-function createAlertFromForm(){
-  const assetId=parseInt(el('al-asset').value),cond=el('al-cond').value,price=el('al-price').value;
-  if(!assetId||!price)return;
-  createAlert(assetId,cond,price);
-  el('al-price').value='';
-}
+      list.appendChild(row);
+    });
+    page.appendChild(list);
+  }
+  function createAlertFromForm(){
+    const assetId=parseInt(el('al-asset').value),cond=el('al-cond').value,price=el('al-price').value;
+    if(!assetId||!price)return;
+    createAlert(assetId,cond,price);
+    el('al-price').value='';
+  }
 
-function renderSearch(page,q){
-  const res=q?ASSETS.filter(a=>a.name.toLowerCase().includes(q.toLowerCase())||a.sym.toLowerCase().includes(q.toLowerCase())||a.cat.toLowerCase().includes(q.toLowerCase())):ASSETS;
-  if(page.innerHTML==='')page.innerHTML=''; // ensure fresh
-  const info=document.createElement('div');info.style='margin-bottom:14px;color:var(--text2);font-size:13px';
-  info.textContent=q?`${res.length} kết quả cho "${q}"`:`Tất cả ${ASSETS.length} assets`;page.appendChild(info);
-  if(!res.length){page.innerHTML+=`<div class="empty"><div class="ei">🔍</div><h3>Không tìm thấy</h3></div>`;return;}
-  const g=document.createElement('div');g.className='assets-grid';res.forEach(a=>g.appendChild(assetCard(a,'srch')));page.appendChild(g);
-}
+  function renderSearch(page,q){
+    const res=q?ASSETS.filter(a=>a.name.toLowerCase().includes(q.toLowerCase())||a.sym.toLowerCase().includes(q.toLowerCase())||a.cat.toLowerCase().includes(q.toLowerCase())):ASSETS;
+    if(page.innerHTML==='')page.innerHTML=''; // ensure fresh
+    const info=document.createElement('div');info.style='margin-bottom:14px;color:var(--text2);font-size:13px';
+    info.textContent=q?`${res.length} kết quả cho "${q}"`:`Tất cả ${ASSETS.length} assets`;page.appendChild(info);
+    if(!res.length){page.innerHTML+=`<div class="empty"><div class="ei">🔍</div><h3>Không tìm thấy</h3></div>`;return;}
+    const g=document.createElement('div');g.className='assets-grid';res.forEach(a=>g.appendChild(assetCard(a,'srch')));page.appendChild(g);
+  }
 
-function renderHeatmap(page){
-  const sh=document.createElement('div');sh.className='sec-hdr';
-  sh.innerHTML=`<div class="sec-title">Price Heatmap</div><div class="live-dot">24H</div>`;page.appendChild(sh);
-  const grid=document.createElement('div');grid.className='heatmap-grid';
-  ASSETS.forEach(a=>{
-    const ch=pct(a.price,a.prev),abs=Math.min(Math.abs(ch),10),ratio=abs/10;
-    const bg=ch>=0?`rgba(0,${Math.floor(150+ratio*105)},${Math.floor(80+ratio*56)},${0.3+ratio*0.5})`:`rgba(${Math.floor(150+ratio*105)},${Math.floor(30+ratio*23)},${Math.floor(50+ratio*35)},${0.3+ratio*0.5})`;
-    const shortName=a.name.length>12?a.name.replace(' Pro','').replace(' M3','').replace(' 16',''):a.name;
-    const cell=document.createElement('div');cell.className='hm-cell';cell.style.background=bg;cell.onclick=()=>openModal(a.id);
-    cell.innerHTML=`<div class="hm-icon">${a.icon}</div><div class="hm-name" title="${a.name}">${shortName}</div><div class="hm-chg ${ch>=0?'up':'down'}">${ch>=0?'+':''}${ch.toFixed(2)}%</div><div class="hm-price">${fmtPrice(a.price,a.cur)}</div>`;
-    grid.appendChild(cell);
-  });
-  page.appendChild(grid);
-}
+  function renderHeatmap(page){
+    const sh=document.createElement('div');sh.className='sec-hdr';
+    sh.innerHTML=`<div class="sec-title">Price Heatmap</div><div class="live-dot">24H</div>`;page.appendChild(sh);
+    const grid=document.createElement('div');grid.className='heatmap-grid';
+    ASSETS.forEach(a=>{
+      const ch=pct(a.price,a.prev),abs=Math.min(Math.abs(ch),10),ratio=abs/10;
+      const bg=ch>=0?`rgba(0,${Math.floor(150+ratio*105)},${Math.floor(80+ratio*56)},${0.3+ratio*0.5})`:`rgba(${Math.floor(150+ratio*105)},${Math.floor(30+ratio*23)},${Math.floor(50+ratio*35)},${0.3+ratio*0.5})`;
+      const shortName=a.name.length>12?a.name.replace(' Pro','').replace(' M3','').replace(' 16',''):a.name;
+      const cell=document.createElement('div');cell.className='hm-cell';cell.style.background=bg;cell.onclick=()=>openModal(a.id);
+      cell.innerHTML=`<div class="hm-icon">${a.icon}</div><div class="hm-name" title="${a.name}">${shortName}</div><div class="hm-chg ${ch>=0?'up':'down'}">${ch>=0?'+':''}${ch.toFixed(2)}%</div><div class="hm-price">${fmtPrice(a.price,a.cur)}</div>`;
+      grid.appendChild(cell);
+    });
+    page.appendChild(grid);
+  }
 
-function renderCompare(page){
-  if(compareChart){compareChart.destroy();compareChart=null;}
-  const sh=document.createElement('div');sh.className='sec-title';sh.style.marginBottom='14px';sh.textContent='Compare — 30-day % change';page.appendChild(sh);
-  const cf=document.createElement('div');cf.className='cat-filters';
-  ASSETS.forEach(a=>{
-    const ci=compareSelected.indexOf(a.id);
-    const b=document.createElement('button');
-    b.className='cat-btn'+(ci>=0?' active':'');
-    if(ci>=0){b.style.background=CHART_COLORS[ci];b.style.borderColor=CHART_COLORS[ci];b.style.color='#000';}
-    b.textContent=a.icon+' '+a.name;
-    b.onclick=()=>{
-      if(compareSelected.includes(a.id))compareSelected=compareSelected.filter(x=>x!==a.id);
-      else if(compareSelected.length<5)compareSelected.push(a.id);
-      renderPage();
-    };
-    cf.appendChild(b);
-  });
-  page.appendChild(cf);
-  const card=document.createElement('div');card.className='card';card.style.height='340px';card.style.marginBottom='14px';
-  const canvas=document.createElement('canvas');canvas.id='compare-chart';card.appendChild(canvas);page.appendChild(card);
-  const cg=document.createElement('div');cg.className='cmp-grid';
-  compareSelected.forEach((id,i)=>{
-    const a=ASSETS.find(x=>x.id===id);if(!a)return;
-    const ch=pct(a.price,a.prev);
-    const cc=document.createElement('div');cc.className='cmp-card';
-    cc.innerHTML=`<div style="border-bottom:3px solid ${CHART_COLORS[i]};padding-bottom:7px;margin-bottom:7px;font-weight:700">${a.icon} ${a.name}</div>
+  function renderCompare(page){
+    if(compareChart){compareChart.destroy();compareChart=null;}
+    const sh=document.createElement('div');sh.className='sec-title';sh.style.marginBottom='14px';sh.textContent='Compare — 30-day % change';page.appendChild(sh);
+    const cf=document.createElement('div');cf.className='cat-filters';
+    ASSETS.forEach(a=>{
+      const ci=compareSelected.indexOf(a.id);
+      const b=document.createElement('button');
+      b.className='cat-btn'+(ci>=0?' active':'');
+      if(ci>=0){b.style.background=CHART_COLORS[ci];b.style.borderColor=CHART_COLORS[ci];b.style.color='#000';}
+      b.textContent=a.icon+' '+a.name;
+      b.onclick=()=>{
+        if(compareSelected.includes(a.id))compareSelected=compareSelected.filter(x=>x!==a.id);
+        else if(compareSelected.length<5)compareSelected.push(a.id);
+        renderPage();
+      };
+      cf.appendChild(b);
+    });
+    page.appendChild(cf);
+    const card=document.createElement('div');card.className='card';card.style.height='340px';card.style.marginBottom='14px';
+    const canvas=document.createElement('canvas');canvas.id='compare-chart';card.appendChild(canvas);page.appendChild(card);
+    const cg=document.createElement('div');cg.className='cmp-grid';
+    compareSelected.forEach((id,i)=>{
+      const a=ASSETS.find(x=>x.id===id);if(!a)return;
+      const ch=pct(a.price,a.prev);
+      const cc=document.createElement('div');cc.className='cmp-card';
+      cc.innerHTML=`<div style="border-bottom:3px solid ${CHART_COLORS[i]};padding-bottom:7px;margin-bottom:7px;font-weight:700">${a.icon} ${a.name}</div>
       <div style="font-family:'Space Mono';font-weight:700;font-size:13px">${fmtPrice(a.price,a.cur)}</div>
       <div class="ac-change ${ch>=0?'up':'down'}" style="margin-top:6px;font-size:11px">${ch>=0?'▲':'▼'} ${Math.abs(ch).toFixed(2)}%</div>`;
-    cg.appendChild(cc);
-  });
-  page.appendChild(cg);
-  Promise.all(compareSelected.map(id=>fetchHistoryFromBackend(id,'30d').then(hist=>({id,hist})))).then(results=>{
-    const ctx=el('compare-chart');if(!ctx)return;
-    const datasets=results.map(({id,hist},i)=>{
-      const a=ASSETS.find(x=>x.id===id);if(!a||!hist.length)return null;
-      const base=hist[0].price;
-      return{label:a.name,data:hist.map(h=>+((h.price-base)/base*100).toFixed(2)),borderColor:CHART_COLORS[i],backgroundColor:'transparent',tension:.4,pointRadius:0,borderWidth:2};
-    }).filter(Boolean);
-    if(!datasets.length)return;
-    compareChart=new Chart(ctx,{type:'line',data:{labels:Array.from({length:datasets[0].data.length},(_,i)=>i===0?'30d ago':i===datasets[0].data.length-1?'Now':''),datasets},
-      options:{responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{labels:{color:'#8888aa',font:{family:'JetBrains Mono',size:11}}},tooltip:{backgroundColor:'#1a1a24',borderColor:'rgba(255,255,255,.13)',borderWidth:1,titleColor:'#8888aa',bodyColor:'#e8e8f0',padding:10,callbacks:{label:c=>`${c.dataset.label}: ${c.raw>0?'+':''}${c.raw}%`}}},
-        scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#8888aa',font:{family:'JetBrains Mono',size:10},maxTicksLimit:8}},y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#8888aa',font:{family:'JetBrains Mono',size:10},callback:v=>v.toFixed(1)+'%'}}},interaction:{mode:'index',intersect:false}}
+      cg.appendChild(cc);
     });
-  });
-}
+    page.appendChild(cg);
+    Promise.all(compareSelected.map(id=>fetchHistoryFromBackend(id,'30d').then(hist=>({id,hist})))).then(results=>{
+      const ctx=el('compare-chart');if(!ctx)return;
+      const datasets=results.map(({id,hist},i)=>{
+        const a=ASSETS.find(x=>x.id===id);if(!a||!hist.length)return null;
+        const base=hist[0].price;
+        return{label:a.name,data:hist.map(h=>+((h.price-base)/base*100).toFixed(2)),borderColor:CHART_COLORS[i],backgroundColor:'transparent',tension:.4,pointRadius:0,borderWidth:2};
+      }).filter(Boolean);
+      if(!datasets.length)return;
+      compareChart=new Chart(ctx,{type:'line',data:{labels:Array.from({length:datasets[0].data.length},(_,i)=>i===0?'30d ago':i===datasets[0].data.length-1?'Now':''),datasets},
+        options:{responsive:true,maintainAspectRatio:false,
+          plugins:{legend:{labels:{color:'#8888aa',font:{family:'JetBrains Mono',size:11}}},tooltip:{backgroundColor:'#1a1a24',borderColor:'rgba(255,255,255,.13)',borderWidth:1,titleColor:'#8888aa',bodyColor:'#e8e8f0',padding:10,callbacks:{label:c=>`${c.dataset.label}: ${c.raw>0?'+':''}${c.raw}%`}}},
+          scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#8888aa',font:{family:'JetBrains Mono',size:10},maxTicksLimit:8}},y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#8888aa',font:{family:'JetBrains Mono',size:10},callback:v=>v.toFixed(1)+'%'}}},interaction:{mode:'index',intersect:false}}
+      });
+    });
+  }
 
-// ══════════════════════════════════════════════════
-// MODAL
-// ══════════════════════════════════════════════════
-let modalPeriod='24h';
-function openModal(id){
-  selectedAssetId=id;modalPeriod='24h';
-  const a=ASSETS.find(x=>x.id===id);
-  const ch=pct(a.price,a.prev),isUp=ch>=0,inW=watchlist.includes(id);
-  const r=Math.random();
-  const pred=r<.33?{s:'bullish',l:'▲ BULLISH',c:65+Math.floor(Math.random()*20)}:r<.66?{s:'bearish',l:'▼ BEARISH',c:55+Math.floor(Math.random()*25)}:{s:'neutral',l:'◆ NEUTRAL',c:50+Math.floor(Math.random()*15)};
-  const momo=60+Math.floor(Math.random()*35),vola=30+Math.floor(Math.random()*50);
-  const src=lastPriceSources[id];
-  el('modal-content').innerHTML=`
+  // ══════════════════════════════════════════════════
+  // MODAL
+  // ══════════════════════════════════════════════════
+  let modalPeriod='24h';
+  function openModal(id){
+    selectedAssetId=id;modalPeriod='24h';
+    const a=ASSETS.find(x=>x.id===id);
+    const ch=pct(a.price,a.prev),isUp=ch>=0,inW=watchlist.includes(id);
+    const r=Math.random();
+    const pred=r<.33?{s:'bullish',l:'▲ BULLISH',c:65+Math.floor(Math.random()*20)}:r<.66?{s:'bearish',l:'▼ BEARISH',c:55+Math.floor(Math.random()*25)}:{s:'neutral',l:'◆ NEUTRAL',c:50+Math.floor(Math.random()*15)};
+    const momo=60+Math.floor(Math.random()*35),vola=30+Math.floor(Math.random()*50);
+    const src=lastPriceSources[id];
+    el('modal-content').innerHTML=`
     <div class="modal-head">
       <div style="display:flex;align-items:center;gap:12px">
         <div class="ac-icon" style="background:${a.color}22;font-size:24px">${a.icon}</div>
@@ -957,81 +957,81 @@ function openModal(id){
         <button class="btn btn-primary" onclick="createAlertModal(${id})">Add Alert</button>
       </div>
     </div>`;
-  el('modal-overlay').style.display='flex';
-  drawModalChartAsync(id,modalPeriod);
-}
-function createAlertModal(id){
-  const cond=el('m-al-cond').value,price=el('m-al-price').value;if(!price)return;
-  createAlert(id,cond,price);el('m-al-price').value='';
-}
-function switchModalPeriod(p){
-  modalPeriod=p;
-  document.querySelectorAll('.chart-tab').forEach(t=>t.classList.toggle('active',t.textContent===p));
-  drawModalChartAsync(selectedAssetId,p);
-}
-async function drawModalChartAsync(id,period){
-  if(modalChart){modalChart.destroy();modalChart=null;}
-  const canvas=el('modal-chart');if(!canvas)return;
-  const a=ASSETS.find(x=>x.id===id);
-  const data=await fetchHistoryFromBackend(id,period);
-  if(!el('modal-chart'))return;
-  const isUp=data[data.length-1].price>=data[0].price;
-  const lc=isUp?'#00ff88':'#ff3355';
-  const ctx=canvas.getContext('2d');
-  const grad=ctx.createLinearGradient(0,0,0,250);
-  grad.addColorStop(0,isUp?'rgba(0,255,136,.15)':'rgba(255,51,85,.15)');grad.addColorStop(1,'rgba(0,0,0,0)');
-  const fmt=t=>{const d=new Date(t);return period==='24h'?d.getHours()+':00':(d.getMonth()+1)+'/'+d.getDate();};
-  modalChart=new Chart(ctx,{type:'line',data:{labels:data.map(d=>fmt(d.time)),datasets:[{data:data.map(d=>d.price),borderColor:lc,backgroundColor:grad,fill:true,tension:.4,pointRadius:0,pointHoverRadius:5,pointHoverBackgroundColor:lc,borderWidth:2}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#1a1a24',borderColor:'#ffffff22',borderWidth:1,titleColor:'#8888aa',bodyColor:'#e8e8f0',padding:10,callbacks:{label:c=>fmtPrice(c.raw,a.cur)}}},
-      scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#8888aa',font:{family:'JetBrains Mono',size:10},maxTicksLimit:8}},y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#8888aa',font:{family:'JetBrains Mono',size:10},callback:v=>fmtPrice(v,a.cur)}}},interaction:{mode:'index',intersect:false}}
-  });
-}
-function closeModal(e){
-  if(e&&e.target!==el('modal-overlay')&&!e.target.classList.contains('close-btn'))return;
-  el('modal-overlay').style.display='none';
-  if(modalChart){modalChart.destroy();modalChart=null;}selectedAssetId=null;
-}
-
-// ══════════════════════════════════════════════════
-// DYNAMIC ASSETS — inject vào ASSETS array
-// ══════════════════════════════════════════════════
-function injectDynamicAssets(){
-  // Remove old dynamic assets from ASSETS array first
-  const staticIds = [1,2,3,4,5,6,7,8,9,10,11];
-  // Remove previously injected dynamic ones
-  for(let i=ASSETS.length-1;i>=0;i--){
-    if(!staticIds.includes(ASSETS[i].id))ASSETS.splice(i,1);
+    el('modal-overlay').style.display='flex';
+    drawModalChartAsync(id,modalPeriod);
   }
-  // Add current dynamic assets
-  dynamicAssets.forEach(a=>{
-    if(!ASSETS.find(x=>x.id===a.id)){
-      ASSETS.push({ id:a.id, name:a.name, sym:a.sym, cat:a.cat,
-        icon:a.icon||'📊', color:a.color||'#888', price:a.price||0,
-        prev:a.price||0, cur:a.cur||'USD', addedBy:'ai-agent' });
+  function createAlertModal(id){
+    const cond=el('m-al-cond').value,price=el('m-al-price').value;if(!price)return;
+    createAlert(id,cond,price);el('m-al-price').value='';
+  }
+  function switchModalPeriod(p){
+    modalPeriod=p;
+    document.querySelectorAll('.chart-tab').forEach(t=>t.classList.toggle('active',t.textContent===p));
+    drawModalChartAsync(selectedAssetId,p);
+  }
+  async function drawModalChartAsync(id,period){
+    if(modalChart){modalChart.destroy();modalChart=null;}
+    const canvas=el('modal-chart');if(!canvas)return;
+    const a=ASSETS.find(x=>x.id===id);
+    const data=await fetchHistoryFromBackend(id,period);
+    if(!el('modal-chart'))return;
+    const isUp=data[data.length-1].price>=data[0].price;
+    const lc=isUp?'#00ff88':'#ff3355';
+    const ctx=canvas.getContext('2d');
+    const grad=ctx.createLinearGradient(0,0,0,250);
+    grad.addColorStop(0,isUp?'rgba(0,255,136,.15)':'rgba(255,51,85,.15)');grad.addColorStop(1,'rgba(0,0,0,0)');
+    const fmt=t=>{const d=new Date(t);return period==='24h'?d.getHours()+':00':(d.getMonth()+1)+'/'+d.getDate();};
+    modalChart=new Chart(ctx,{type:'line',data:{labels:data.map(d=>fmt(d.time)),datasets:[{data:data.map(d=>d.price),borderColor:lc,backgroundColor:grad,fill:true,tension:.4,pointRadius:0,pointHoverRadius:5,pointHoverBackgroundColor:lc,borderWidth:2}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#1a1a24',borderColor:'#ffffff22',borderWidth:1,titleColor:'#8888aa',bodyColor:'#e8e8f0',padding:10,callbacks:{label:c=>fmtPrice(c.raw,a.cur)}}},
+        scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#8888aa',font:{family:'JetBrains Mono',size:10},maxTicksLimit:8}},y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#8888aa',font:{family:'JetBrains Mono',size:10},callback:v=>fmtPrice(v,a.cur)}}},interaction:{mode:'index',intersect:false}}
+    });
+  }
+  function closeModal(e){
+    if(e&&e.target!==el('modal-overlay')&&!e.target.classList.contains('close-btn'))return;
+    el('modal-overlay').style.display='none';
+    if(modalChart){modalChart.destroy();modalChart=null;}selectedAssetId=null;
+  }
+
+  // ══════════════════════════════════════════════════
+  // DYNAMIC ASSETS — inject vào ASSETS array
+  // ══════════════════════════════════════════════════
+  function injectDynamicAssets(){
+    // Remove old dynamic assets from ASSETS array first
+    const staticIds = [1,2,3,4,5,6,7,8,9,10,11];
+    // Remove previously injected dynamic ones
+    for(let i=ASSETS.length-1;i>=0;i--){
+      if(!staticIds.includes(ASSETS[i].id))ASSETS.splice(i,1);
     }
-  });
-  updateBadges();
-}
+    // Add current dynamic assets
+    dynamicAssets.forEach(a=>{
+      if(!ASSETS.find(x=>x.id===a.id)){
+        ASSETS.push({ id:a.id, name:a.name, sym:a.sym, cat:a.cat,
+          icon:a.icon||'📊', color:a.color||'#888', price:a.price||0,
+          prev:a.price||0, cur:a.cur||'USD', addedBy:'ai-agent' });
+      }
+    });
+    updateBadges();
+  }
 
-// ══════════════════════════════════════════════════
-// AI PAGE
-// ══════════════════════════════════════════════════
-let aiPending = null; // pending asset to confirm
+  // ══════════════════════════════════════════════════
+  // AI PAGE
+  // ══════════════════════════════════════════════════
+  let aiPending = null; // pending asset to confirm
 
-async function renderAIPage(page){
-  // Check if AI is available
-  let aiAvailable = false;
-  try{
-    const s=await fetch(`${BACKEND}/api/ai/status`).then(r=>r.json());
-    aiAvailable = s.hasApiKey;
-  }catch(e){}
+  async function renderAIPage(page){
+    // Check if AI is available
+    let aiAvailable = false;
+    try{
+      const s=await fetch(`${BACKEND}/api/ai/status`).then(r=>r.json());
+      aiAvailable = s.hasApiKey;
+    }catch(e){}
 
-  page.innerHTML='';
+    page.innerHTML='';
 
-  // No API key banner
-  if(!aiAvailable){
-    const banner=document.createElement('div');banner.className='no-key-banner';
-    banner.innerHTML=`
+    // No API key banner
+    if(!aiAvailable){
+      const banner=document.createElement('div');banner.className='no-key-banner';
+      banner.innerHTML=`
       <div class="icon">🔑</div>
       <div>
         <div style="font-weight:700;margin-bottom:6px">Cần Anthropic API Key để dùng AI Agent</div>
@@ -1043,16 +1043,16 @@ async function renderAIPage(page){
           Lấy API key miễn phí tại <a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--blue)">aistudio.google.com/apikey</a>
         </div>
       </div>`;
-    page.appendChild(banner);
-  }
+      page.appendChild(banner);
+    }
 
-  // AI Search box
-  const searchBox=document.createElement('div');searchBox.className='ai-search-box';
-  searchBox.innerHTML=`
+    // AI Search box
+    const searchBox=document.createElement('div');searchBox.className='ai-search-box';
+    searchBox.innerHTML=`
     <div class="ai-title">🤖 Thêm Asset bằng AI</div>
     <div class="ai-sub">Nhập tên bất kỳ — AI sẽ tự tìm nguồn dữ liệu và fetch giá thật</div>
     <div class="ai-input-row">
-      <input class="ai-input" id="ai-query" placeholder="Ví dụ: đồng, bạch kim, Dogecoin, nhân dân tệ, Ripple..." 
+      <input class="ai-input" id="ai-query" placeholder="Ví dụ: đồng, bạch kim, Dogecoin, nhân dân tệ, Ripple..."
         ${aiAvailable?'':'disabled'}
         onkeydown="if(event.key==='Enter')runAIDiscover()"/>
       <button class="ai-btn" id="ai-discover-btn" onclick="runAIDiscover()" ${aiAvailable?'':'disabled'}>
@@ -1068,20 +1068,20 @@ async function renderAIPage(page){
     <div class="ai-status" id="ai-status"></div>
     <div class="ai-result-card" id="ai-result"></div>
   `;
-  page.appendChild(searchBox);
+    page.appendChild(searchBox);
 
-  // Dynamic assets list
-  if(dynamicAssets.length>0){
-    const listTitle=document.createElement('div');
-    listTitle.className='sec-title';listTitle.style.marginBottom='14px';
-    listTitle.textContent=`Assets đã thêm bởi AI (${dynamicAssets.length})`;
-    page.appendChild(listTitle);
+    // Dynamic assets list
+    if(dynamicAssets.length>0){
+      const listTitle=document.createElement('div');
+      listTitle.className='sec-title';listTitle.style.marginBottom='14px';
+      listTitle.textContent=`Assets đã thêm bởi AI (${dynamicAssets.length})`;
+      page.appendChild(listTitle);
 
-    dynamicAssets.forEach(a=>{
-      const curPrice=ASSETS.find(x=>x.id===a.id)?.price||a.price||0;
-      const ch=a.change24h||0;
-      const row=document.createElement('div');row.className='dynamic-asset-row';
-      row.innerHTML=`
+      dynamicAssets.forEach(a=>{
+        const curPrice=ASSETS.find(x=>x.id===a.id)?.price||a.price||0;
+        const ch=a.change24h||0;
+        const row=document.createElement('div');row.className='dynamic-asset-row';
+        row.innerHTML=`
         <div style="display:flex;align-items:center;gap:12px">
           <span style="font-size:24px">${a.icon||'📊'}</span>
           <div>
@@ -1097,51 +1097,51 @@ async function renderAIPage(page){
           </div>
           <button class="btn btn-danger btn-sm" onclick="removeAIAsset(${a.id})">✕ Xoá</button>
         </div>`;
-      page.appendChild(row);
-    });
-  } else if(aiAvailable) {
-    const empty=document.createElement('div');empty.className='empty';
-    empty.innerHTML='<div class="ei">🤖</div><h3>Chưa có asset nào</h3><p>Thử thêm "đồng", "Dogecoin" hoặc "nhân dân tệ" ở trên!</p>';
-    page.appendChild(empty);
-  }
-}
-
-async function runAIDiscover(){
-  const query=document.getElementById('ai-query')?.value?.trim();
-  if(!query)return;
-
-  const statusEl=document.getElementById('ai-status');
-  const resultEl=document.getElementById('ai-result');
-  const btn=document.getElementById('ai-discover-btn');
-  const btnIcon=document.getElementById('ai-btn-icon');
-
-  // Show thinking state
-  btn.disabled=true;
-  btnIcon.textContent='⏳';
-  statusEl.className='ai-status thinking';
-  statusEl.innerHTML=`<div class="ai-spinner"></div><div><strong>Claude đang phân tích...</strong><br><span style="font-size:12px;opacity:.8">Tìm API phù hợp và fetch giá thật cho "${query}"</span></div>`;
-  statusEl.style.display='flex';
-  resultEl.className='ai-result-card';
-  aiPending=null;
-
-  try{
-    const d=await apiCall('/api/ai/discover','POST',{query},authToken);
-
-    if(!d.ok){
-      statusEl.className='ai-status error';
-      statusEl.innerHTML=`<span style="font-size:18px">❌</span><div><strong>Thất bại</strong><br>${d.error}</div>`;
-      return;
+        page.appendChild(row);
+      });
+    } else if(aiAvailable) {
+      const empty=document.createElement('div');empty.className='empty';
+      empty.innerHTML='<div class="ei">🤖</div><h3>Chưa có asset nào</h3><p>Thử thêm "đồng", "Dogecoin" hoặc "nhân dân tệ" ở trên!</p>';
+      page.appendChild(empty);
     }
+  }
 
-    const a=d.asset;
-    aiPending=a;
+  async function runAIDiscover(){
+    const query=document.getElementById('ai-query')?.value?.trim();
+    if(!query)return;
 
-    // Show result card
-    statusEl.className='ai-status success';
-    statusEl.innerHTML=`<span style="font-size:18px">✅</span><div><strong>Tìm thấy!</strong> Xác nhận để thêm vào tracker.</div>`;
+    const statusEl=document.getElementById('ai-status');
+    const resultEl=document.getElementById('ai-result');
+    const btn=document.getElementById('ai-discover-btn');
+    const btnIcon=document.getElementById('ai-btn-icon');
 
-    const ch=a.change24h||0;
-    resultEl.innerHTML=`
+    // Show thinking state
+    btn.disabled=true;
+    btnIcon.textContent='⏳';
+    statusEl.className='ai-status thinking';
+    statusEl.innerHTML=`<div class="ai-spinner"></div><div><strong>Claude đang phân tích...</strong><br><span style="font-size:12px;opacity:.8">Tìm API phù hợp và fetch giá thật cho "${query}"</span></div>`;
+    statusEl.style.display='flex';
+    resultEl.className='ai-result-card';
+    aiPending=null;
+
+    try{
+      const d=await apiCall('/api/ai/discover','POST',{query},authToken);
+
+      if(!d.ok){
+        statusEl.className='ai-status error';
+        statusEl.innerHTML=`<span style="font-size:18px">❌</span><div><strong>Thất bại</strong><br>${d.error}</div>`;
+        return;
+      }
+
+      const a=d.asset;
+      aiPending=a;
+
+      // Show result card
+      statusEl.className='ai-status success';
+      statusEl.innerHTML=`<span style="font-size:18px">✅</span><div><strong>Tìm thấy!</strong> Xác nhận để thêm vào tracker.</div>`;
+
+      const ch=a.change24h||0;
+      resultEl.innerHTML=`
       <div class="ai-result-head">
         <div class="ai-result-icon">${a.icon||'📊'}</div>
         <div>
@@ -1156,90 +1156,90 @@ async function runAIDiscover(){
         <button class="btn btn-primary" onclick="confirmAddAIAsset()">+ Thêm vào Tracker</button>
         <button class="btn btn-ghost" onclick="cancelAIAsset()">Huỷ</button>
       </div>`;
-    resultEl.classList.add('show');
+      resultEl.classList.add('show');
 
-  }catch(e){
-    statusEl.className='ai-status error';
-    statusEl.innerHTML=`<span style="font-size:18px">❌</span><div><strong>Lỗi kết nối</strong><br>${e.message}</div>`;
-  }finally{
-    btn.disabled=false;
-    btnIcon.textContent='✨';
+    }catch(e){
+      statusEl.className='ai-status error';
+      statusEl.innerHTML=`<span style="font-size:18px">❌</span><div><strong>Lỗi kết nối</strong><br>${e.message}</div>`;
+    }finally{
+      btn.disabled=false;
+      btnIcon.textContent='✨';
+    }
   }
-}
 
-async function confirmAddAIAsset(){
-  if(!aiPending)return;
-  const a=aiPending;
-  aiPending=null;
+  async function confirmAddAIAsset(){
+    if(!aiPending)return;
+    const a=aiPending;
+    aiPending=null;
 
-  const statusEl=document.getElementById('ai-status');
-  if(statusEl){ statusEl.className='ai-status thinking'; statusEl.innerHTML='<div class="ai-spinner"></div><div>Đang lưu vào tracker...</div>'; statusEl.style.display='flex'; }
+    const statusEl=document.getElementById('ai-status');
+    if(statusEl){ statusEl.className='ai-status thinking'; statusEl.innerHTML='<div class="ai-spinner"></div><div>Đang lưu vào tracker...</div>'; statusEl.style.display='flex'; }
 
-  try{
-    // Gọi /api/ai/confirm để lưu vào DB
-    const d=await apiCall('/api/ai/confirm','POST',{asset:a},authToken);
-    if(!d.ok){ showNotif('❌ Lỗi',d.error||'Không thể thêm asset'); return; }
+    try{
+      // Gọi /api/ai/confirm để lưu vào DB
+      const d=await apiCall('/api/ai/confirm','POST',{asset:a},authToken);
+      if(!d.ok){ showNotif('❌ Lỗi',d.error||'Không thể thêm asset'); return; }
 
-    // --- BẮT ĐẦU ĐOẠN SỬA: LẤY ID THẬT TỪ BACKEND TRẢ VỀ ---
-    const finalAsset = d.asset || a;
+      // --- BẮT ĐẦU ĐOẠN SỬA: LẤY ID THẬT TỪ BACKEND TRẢ VỀ ---
+      const finalAsset = d.asset || a;
 
-    dynamicAssets.push(finalAsset);
-    ASSETS.push({
-      id: finalAsset.id, // Bắt buộc phải là finalAsset.id
-      name: finalAsset.name,
-      sym: finalAsset.sym,
-      cat: finalAsset.cat,
-      icon: finalAsset.icon || '📊',
-      color: finalAsset.color || '#888',
-      price: finalAsset.price || 0,
-      prev: finalAsset.price || 0,
-      cur: finalAsset.cur || 'USD',
-      addedBy: 'ai-agent'
-    });
-    // --- KẾT THÚC ĐOẠN SỬA ---
+      dynamicAssets.push(finalAsset);
+      ASSETS.push({
+        id: finalAsset.id, // Bắt buộc phải là finalAsset.id
+        name: finalAsset.name,
+        sym: finalAsset.sym,
+        cat: finalAsset.cat,
+        icon: finalAsset.icon || '📊',
+        color: finalAsset.color || '#888',
+        price: finalAsset.price || 0,
+        prev: finalAsset.price || 0,
+        cur: finalAsset.cur || 'USD',
+        addedBy: 'ai-agent'
+      });
+      // --- KẾT THÚC ĐOẠN SỬA ---
 
+      updateBadges();
+      showNotif(`✅ Đã thêm ${finalAsset.name}`,`${fmtPrice(finalAsset.price,finalAsset.cur)} · nguồn: ${finalAsset.source}`);
+      document.getElementById('ai-query').value='';
+      renderPage();
+    }catch(e){
+      showNotif('❌ Lỗi kết nối',e.message);
+    }
+  }
+
+  function cancelAIAsset(){
+    aiPending=null;
+    const r=document.getElementById('ai-result');
+    const s=document.getElementById('ai-status');
+    if(r)r.classList.remove('show');
+    if(s)s.style.display='none';
+  }
+
+  async function removeAIAsset(id){
+    dynamicAssets=dynamicAssets.filter(a=>a.id!==id);
+    // Remove from ASSETS array
+    const idx=ASSETS.findIndex(a=>a.id===id);
+    if(idx>-1)ASSETS.splice(idx,1);
+    // Also remove from watchlist if present
+    if(watchlist.includes(id)){
+      watchlist=watchlist.filter(x=>x!==id);
+      try{ await apiCall(`/api/watchlist/${id}`,'DELETE',null,authToken); }catch(e){}
+    }
+    try{ await apiCall(`/api/ai/assets/${id}`,'DELETE',null,authToken); }catch(e){}
     updateBadges();
-    showNotif(`✅ Đã thêm ${finalAsset.name}`,`${fmtPrice(finalAsset.price,finalAsset.cur)} · nguồn: ${finalAsset.source}`);
-    document.getElementById('ai-query').value='';
+    showNotif('🗑️ Đã xoá asset','Asset đã được xoá khỏi tracker');
     renderPage();
-  }catch(e){
-    showNotif('❌ Lỗi kết nối',e.message);
   }
-}
 
-function cancelAIAsset(){
-  aiPending=null;
-  const r=document.getElementById('ai-result');
-  const s=document.getElementById('ai-status');
-  if(r)r.classList.remove('show');
-  if(s)s.style.display='none';
-}
-
-async function removeAIAsset(id){
-  dynamicAssets=dynamicAssets.filter(a=>a.id!==id);
-  // Remove from ASSETS array
-  const idx=ASSETS.findIndex(a=>a.id===id);
-  if(idx>-1)ASSETS.splice(idx,1);
-  // Also remove from watchlist if present
-  if(watchlist.includes(id)){
-    watchlist=watchlist.filter(x=>x!==id);
-    try{ await apiCall(`/api/watchlist/${id}`,'DELETE',null,authToken); }catch(e){}
-  }
-  try{ await apiCall(`/api/ai/assets/${id}`,'DELETE',null,authToken); }catch(e){}
-  updateBadges();
-  showNotif('🗑️ Đã xoá asset','Asset đã được xoá khỏi tracker');
-  renderPage();
-}
-
-// ══════════════════════════════════════════════════
-// DELETE ASSET
-// ══════════════════════════════════════════════════
-function deleteAsset(id, name, isDynamic) {
-  // Show confirm dialog
-  const overlay = document.createElement('div');
-  overlay.className = 'confirm-dialog';
-  overlay.id = 'confirm-dialog';
-  overlay.innerHTML = `
+  // ══════════════════════════════════════════════════
+  // DELETE ASSET
+  // ══════════════════════════════════════════════════
+  function deleteAsset(id, name, isDynamic) {
+    // Show confirm dialog
+    const overlay = document.createElement('div');
+    overlay.className = 'confirm-dialog';
+    overlay.id = 'confirm-dialog';
+    overlay.innerHTML = `
     <div class="confirm-box">
       <div class="confirm-icon">🗑️</div>
       <div class="confirm-title">Xoá "${name}"?</div>
@@ -1252,58 +1252,58 @@ function deleteAsset(id, name, isDynamic) {
         <button class="btn btn-ghost" onclick="document.getElementById('confirm-dialog').remove()">Huỷ</button>
       </div>
     </div>`;
-  document.body.appendChild(overlay);
-  overlay.onclick = e => { if(e.target===overlay) overlay.remove(); };
-}
-
-async function confirmDeleteAsset(id, isDynamic) {
-  document.getElementById('confirm-dialog')?.remove();
-
-  if (isDynamic) {
-    // Dynamic asset: xoá hẳn khỏi DB
-    await removeAIAsset(id);
-    return;
+    document.body.appendChild(overlay);
+    overlay.onclick = e => { if(e.target===overlay) overlay.remove(); };
   }
 
-  // Static asset: soft-hide (lưu vào hiddenAssets)
-  hiddenAssets.push(id);
+  async function confirmDeleteAsset(id, isDynamic) {
+    document.getElementById('confirm-dialog')?.remove();
 
-  // Remove from watchlist if present
-  if (watchlist.includes(id)) {
-    watchlist = watchlist.filter(x => x !== id);
-    try { await apiCall(`/api/watchlist/${id}`, 'DELETE', null, authToken); } catch(e) {}
+    if (isDynamic) {
+      // Dynamic asset: xoá hẳn khỏi DB
+      await removeAIAsset(id);
+      return;
+    }
+
+    // Static asset: soft-hide (lưu vào hiddenAssets)
+    hiddenAssets.push(id);
+
+    // Remove from watchlist if present
+    if (watchlist.includes(id)) {
+      watchlist = watchlist.filter(x => x !== id);
+      try { await apiCall(`/api/watchlist/${id}`, 'DELETE', null, authToken); } catch(e) {}
+    }
+
+    // Call backend to persist hidden state
+    try {
+      await apiCall(`/api/assets/${id}`, 'DELETE', null, authToken);
+      showNotif('🗑️ Đã xoá', `Asset đã được ẩn khỏi tracker`);
+    } catch(e) {
+      showNotif('⚠️ Lỗi', 'Không thể lưu thay đổi — kiểm tra kết nối backend');
+    }
+
+    updateBadges();
+    renderPage();
   }
 
-  // Call backend to persist hidden state
-  try {
-    await apiCall(`/api/assets/${id}`, 'DELETE', null, authToken);
-    showNotif('🗑️ Đã xoá', `Asset đã được ẩn khỏi tracker`);
-  } catch(e) {
-    showNotif('⚠️ Lỗi', 'Không thể lưu thay đổi — kiểm tra kết nối backend');
+  async function restoreAsset(id) {
+    hiddenAssets = hiddenAssets.filter(x => x !== id);
+    try {
+      await apiCall(`/api/assets/${id}/restore`, 'POST', null, authToken);
+      showNotif('✅ Đã khôi phục', 'Asset đã được hiển thị lại');
+    } catch(e) {}
+    renderPage();
   }
 
-  updateBadges();
-  renderPage();
-}
-
-async function restoreAsset(id) {
-  hiddenAssets = hiddenAssets.filter(x => x !== id);
-  try {
-    await apiCall(`/api/assets/${id}/restore`, 'POST', null, authToken);
-    showNotif('✅ Đã khôi phục', 'Asset đã được hiển thị lại');
-  } catch(e) {}
-  renderPage();
-}
-
-// ══════════════════════════════════════════════════
-// INIT — kiểm tra auto-login trước
-// ══════════════════════════════════════════════════
-(async()=>{
-  const ok = await tryAutoLogin();
-  if(!ok){
-    el('auth-screen').style.display='flex';
-  }
-})();
+  // ══════════════════════════════════════════════════
+  // INIT — kiểm tra auto-login trước
+  // ══════════════════════════════════════════════════
+  (async()=>{
+    const ok = await tryAutoLogin();
+    if(!ok){
+      el('auth-screen').style.display='flex';
+    }
+  })();
 </script>
 </body>
 </html>
