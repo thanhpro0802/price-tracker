@@ -1,0 +1,16 @@
+{
+  "name": "smart-price-tracker",
+  "version": "1.0.0",
+  "description": "Theo dõi giá tài sản thời gian thực — Crypto, Vàng, Cổ phiếu VN, Xăng dầu",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["price tracker", "crypto", "gold", "chứng khoán", "xăng dầu", "vietnam"],
+  "author": "Smart Price Tracker",
+  "license": "MIT"
+}
