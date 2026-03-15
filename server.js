@@ -38,6 +38,7 @@ const DB_FILE    = path.join(__dirname, 'db.json');
 // ─── CONFIG ──────────────────────────────────────────────────
 const CFG = {
   GEMINI_API_KEY:  process.env.GEMINI_API_KEY || '',
+  GOLD_API_KEY:    process.env.GOLD_API_KEY   || '',
   HISTORY_TTL_MS:     60 * 60 * 1000,
   UPDATE_INTERVAL_MS:  5 * 60 * 1000,
   HISTORY_DELAY_MS:   8000,
@@ -253,7 +254,28 @@ async function fetchCryptoPrices() {
     }
     cache.status.crypto = 'ok';
     console.log(`[${ts()}] ✅ Crypto BTC:$${Math.round(cache.prices[1]?.price).toLocaleString('en-US')}`);
-  } catch(e) { cache.status.crypto = 'error'; console.error(`[${ts()}] ❌ Crypto:`, e.message); }
+  } catch(e) {
+    cache.status.crypto = 'error';
+    console.error(`[${ts()}] ❌ Crypto CoinGecko:`, e.message);
+    // ── Fallback: CoinLore (no rate limit, no key) ──
+    try {
+      // BTC=90, ETH=80, SOL=48543
+      const r = await fetchJSON('https://api.coinlore.net/api/ticker/?id=90,80,48543');
+      const coins = Array.isArray(r) ? r : [];
+      const clMap = { '90': 1, '80': 2, '48543': 3 };
+      for (const coin of coins) {
+        const assetId = clMap[coin.id];
+        if (!assetId) continue;
+        const price = parseFloat(coin.price_usd);
+        const ch    = parseFloat(coin.percent_change_24h || 0);
+        cache.prices[assetId] = { price, change24h: +ch.toFixed(4), updatedAt: Date.now(), source: 'coinlore' };
+      }
+      cache.status.crypto = 'fallback';
+      console.log(`[${ts()}] ✅ Crypto fallback CoinLore BTC:$${Math.round(cache.prices[1]?.price).toLocaleString('en-US')}`);
+    } catch(e2) {
+      console.error(`[${ts()}] ❌ Crypto CoinLore:`, e2.message);
+    }
+  }
 }
 
 async function fetchCryptoHistory(coinId, assetId, days) {
@@ -356,6 +378,155 @@ async function fetchMetals() {
       cache.prices[7] = { price: 3100.00, change24h: 0, updatedAt: Date.now(), source: 'mock' };
       cache.prices[8] = { price: 34.50,   change24h: 0, updatedAt: Date.now(), source: 'mock' };
     }
+  }
+}
+
+// ─── METAL HISTORY — api.gold-api.com/history (cần API key) ──
+// Rate limit: 10 req/hour trên free tier
+// groupBy: day (7d/30d), month (1y), hour (24h — premium only → fallback day)
+const metalHistoryCache = {}; // key: `${assetId}_${period}` → { data, fetchedAt }
+const METAL_HISTORY_TTL = 60 * 60 * 1000; // 1 giờ
+
+async function fetchMetalHistory(assetId, period) {
+  if (!CFG.GOLD_API_KEY) return null; // Không có key → dùng mock
+
+  const key = `${assetId}_${period}`;
+  const cached = metalHistoryCache[key];
+  if (cached && Date.now() - cached.fetchedAt < METAL_HISTORY_TTL) {
+    console.log(`[${ts()}] ⚡ Metal history cache: ${key}`);
+    return cached.data;
+  }
+
+  const symbolMap = { 7: 'XAU', 8: 'XAG' };
+  const symbol = symbolMap[assetId];
+  if (!symbol) return null;
+
+  const daysN = { '24h': 1, '7d': 7, '30d': 30, '1y': 365 }[period] || 7;
+  const now   = Math.floor(Date.now() / 1000);
+  const start = now - daysN * 86400;
+
+  // groupBy: 24h → day (free tier không có hour), 7d/30d → day, 1y → month
+  const groupBy = daysN <= 30 ? 'day' : 'month';
+
+  try {
+    const url = `https://api.gold-api.com/history?symbol=${symbol}&startTimestamp=${start}&endTimestamp=${now}&groupBy=${groupBy}&aggregation=avg&orderBy=asc`;
+    const d = await fetchJSON(url, { 'x-api-key': CFG.GOLD_API_KEY });
+
+    if (!Array.isArray(d) || d.length === 0) {
+      console.log(`[${ts()}] ⚠️ Metal history empty for ${symbol} ${period}`);
+      return null;
+    }
+
+    // Convert response → { time (ms), price } format
+    const data = d.map(item => {
+      // item có dạng: { day: "2024-01-15", avg_price: 2034.5 } hoặc { month: "2024-01", avg_price: ... }
+      const dateStr = item.day || item.month || item.week || item.year || '';
+      const price   = item.avg_price || item.max_price || item.min_price || 0;
+      return { time: new Date(dateStr).getTime(), price: +parseFloat(price).toFixed(2) };
+    }).filter(p => p.time && p.price > 0);
+
+    if (data.length === 0) return null;
+
+    metalHistoryCache[key] = { data, fetchedAt: Date.now() };
+    console.log(`[${ts()}] ✅ Metal history: ${symbol} ${period} (${data.length} pts)`);
+    return data;
+  } catch(e) {
+    console.error(`[${ts()}] ❌ Metal history ${symbol} ${period}:`, e.message);
+    return null;
+  }
+}
+
+// ─── CURRENCY HISTORY — Frankfurter (miễn phí, không cần key) ──
+// Frankfurter chỉ update 1 lần/ngày (ECB rates) → 24h = dùng 7d data
+// id=4: USD/VND, id=5: JPY/VND, id=6: EUR/VND
+const currencyHistoryCache = {};
+const CURRENCY_HISTORY_TTL = 6 * 60 * 60 * 1000; // 6 giờ (Frankfurter update 1 lần/ngày)
+
+async function fetchCurrencyHistory(assetId, period) {
+  // Frankfurter chỉ có daily data → 24h fallback sang 7d
+  const effectivePeriod = period === '24h' ? '7d' : period;
+  const key = `${assetId}_${effectivePeriod}`;
+
+  const cached = currencyHistoryCache[key];
+  if (cached && Date.now() - cached.fetchedAt < CURRENCY_HISTORY_TTL) {
+    console.log(`[${ts()}] ⚡ Currency history cache: ${key}`);
+    return cached.data;
+  }
+
+  const daysN = { '7d': 7, '30d': 30, '1y': 365 }[effectivePeriod] || 7;
+  const endDate   = new Date();
+  // Lùi thêm 3 ngày để tránh weekend/holiday không có data
+  const startDate = new Date(Date.now() - (daysN + 3) * 86400000);
+  const fmt = d => d.toISOString().slice(0, 10);
+
+  const currentUsdVnd = cache.prices[4]?.price || 25400;
+
+  // Frankfurter base/symbol mapping
+  // id=4 USD/VND: lấy EUR→USD (USD/EUR) để tính xu hướng USD
+  // id=5 JPY/VND: lấy USD→JPY
+  // id=6 EUR/VND: lấy USD→EUR
+  const cfgMap = {
+    4: { base: 'USD', symbol: 'EUR' }, // EUR per 1 USD → USD strength indicator
+    5: { base: 'USD', symbol: 'JPY' }, // JPY per 1 USD
+    6: { base: 'USD', symbol: 'EUR' }, // EUR per 1 USD
+  };
+  const { base, symbol } = cfgMap[assetId];
+
+  try {
+    const url = `https://api.frankfurter.dev/v1/${fmt(startDate)}..${fmt(endDate)}?base=${base}&symbols=${symbol}`;
+    const r = await fetchJSON(url);
+
+    // server.js fetchJSON resolve trực tiếp obj (không phải {status, data})
+    if (!r || typeof r !== 'object' || !r.rates) {
+      throw new Error(`Frankfurter bad response: ${JSON.stringify(r).slice(0,100)}`);
+    }
+
+    const rates = r.rates;
+    const dates = Object.keys(rates).sort();
+    if (dates.length === 0) throw new Error('Empty rates from Frankfurter');
+
+    // Latest rate để làm anchor với giá VND thực tế hiện tại
+    const latestRate = rates[dates[dates.length - 1]][symbol];
+    if (!latestRate) throw new Error(`No ${symbol} rate in Frankfurter response`);
+
+    let data;
+    if (assetId === 4) {
+      // USD/VND: khi EUR/USD tăng → USD yếu → USD/VND giảm (tỷ lệ nghịch)
+      data = dates.map(date => {
+        const eurPerUsd = rates[date][symbol];
+        const usdVnd = +(currentUsdVnd * (latestRate / eurPerUsd)).toFixed(0);
+        return { time: new Date(date).getTime(), price: usdVnd };
+      });
+    } else if (assetId === 5) {
+      // JPY/VND: USD→JPY rate = JPY per 1 USD
+      const currentJpyVnd = cache.prices[5]?.price || (currentUsdVnd / latestRate);
+      data = dates.map(date => {
+        const jpyPerUsd = rates[date][symbol];
+        // JPY/VND = USD/VND ÷ JPY/USD
+        const jpyVnd = +(currentUsdVnd / jpyPerUsd * (currentJpyVnd / (currentUsdVnd / latestRate))).toFixed(2);
+        return { time: new Date(date).getTime(), price: jpyVnd };
+      });
+    } else {
+      // EUR/VND: EUR per 1 USD → EUR/VND = USD/VND ÷ EUR/USD = USD/VND × USD/EUR
+      const currentEurVnd = cache.prices[6]?.price || Math.round(currentUsdVnd / latestRate);
+      data = dates.map(date => {
+        const eurPerUsd = rates[date][symbol];
+        // EUR/VND: khi EUR/USD rate nhỏ (ít EUR = 1 USD → EUR mạnh) → EUR/VND cao
+        // EUR/VND[t] = currentEurVnd * (latestRate / eurPerUsd)
+        const eurVnd = +Math.round(currentEurVnd * (latestRate / eurPerUsd)).toFixed(0);
+        return { time: new Date(date).getTime(), price: eurVnd };
+      });
+    }
+
+    data = data.filter(p => p.time && p.price > 0);
+    if (data.length === 0) throw new Error('No valid data points after processing');
+
+    currencyHistoryCache[key] = { data, fetchedAt: Date.now() };
+    console.log(`[${ts()}] ✅ Currency history: id=${assetId} ${effectivePeriod} (${data.length} pts, frankfurter)`);
+    return data;
+  } catch(e) {
+    console.error(`[${ts()}] ❌ Currency history id=${assetId} ${effectivePeriod}:`, e.message);
+    return null;
   }
 }
 
@@ -583,6 +754,8 @@ const server = http.createServer(async (req, res) => {
     const daysN = { '24h': 1, '7d': 7, '30d': 30, '1y': 365 }[period] || 7;
     const key   = `${id}_${daysN}d`;
     const cm    = { 1: 'bitcoin', 2: 'ethereum', 3: 'solana' };
+
+    // ── Crypto: CoinGecko history ──
     if (cache.history[key])
       return sendJSON(res, { ok: true, id, period, data: cache.history[key].data, source: cache.history[key].source });
     if (cm[id]) {
@@ -590,6 +763,48 @@ const server = http.createServer(async (req, res) => {
       if (cache.history[key])
         return sendJSON(res, { ok: true, id, period, data: cache.history[key].data, source: cache.history[key].source });
     }
+
+    // ── Metals (id=7 Gold, id=8 Silver): Gold API history ──
+    if (id === 7 || id === 8) {
+      const metalData = await fetchMetalHistory(id, period);
+      if (metalData) {
+        return sendJSON(res, { ok: true, id, period, data: metalData, source: 'gold-api.com' });
+      }
+      const base = cache.prices[id]?.price || (id === 7 ? 3100 : 34);
+      return sendJSON(res, { ok: true, id, period, data: mockHistory(base, daysN, 0.008), source: 'mock' });
+    }
+
+    // ── Currency (id=4 USD/VND, id=5 JPY/VND, id=6 EUR/VND): Frankfurter history ──
+    if (id === 4 || id === 5 || id === 6) {
+      const currData = await fetchCurrencyHistory(id, period);
+      if (currData) {
+        return sendJSON(res, { ok: true, id, period, data: currData, source: 'frankfurter' });
+      }
+      const base = cache.prices[id]?.price || 25000;
+      return sendJSON(res, { ok: true, id, period, data: mockHistory(base, daysN, 0.003), source: 'mock' });
+    }
+
+    // ── Dynamic assets dùng CoinGecko (XRP, DOGE, ADA...) ──
+    // Tìm trong DB xem asset này có fetchStrategy=coingecko không
+    if (!cm[id] && id > 11) {
+      const dynCoinId = (() => {
+        DB = loadDB();
+        const allAssets = Object.values(DB.dynamicAssets || {}).flat();
+        const asset = allAssets.find(a => a.id === id);
+        if (asset?.fetchStrategy === 'coingecko') return asset.fetchParam;
+        // Fallback: check cache
+        const cached = cache.prices[id];
+        if (cached?.fetchStrategy === 'coingecko') return cached.fetchParam;
+        return null;
+      })();
+      if (dynCoinId) {
+        await fetchCryptoHistory(dynCoinId, id, daysN);
+        if (cache.history[key])
+          return sendJSON(res, { ok: true, id, period, data: cache.history[key].data, source: cache.history[key].source });
+      }
+    }
+
+    // ── Fallback: mock cho các asset khác ──
     const base = cache.prices[id]?.price || 1000;
     return sendJSON(res, { ok: true, id, period, data: mockHistory(base, daysN, id <= 3 ? 0.03 : 0.005), source: 'mock' });
   }
@@ -769,7 +984,9 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log('╠══════════════════════════════════════════╣');
   console.log(`║  🚀  ${HOST.padEnd(42)}║`);
   console.log('╠══════════════════════════════════════════╣');
-  console.log('║  AUTH:                                   ║');
+  console.log('║  KEYS:                                   ║');
+  console.log(`║  Gemini: ${(CFG.GEMINI_API_KEY ? '✅ configured' : '❌ not set').padEnd(32)}║`);
+  console.log(`║  GoldAPI: ${(CFG.GOLD_API_KEY  ? '✅ configured' : '❌ not set — metal history = mock').padEnd(31)}║`);
   console.log('║   POST /api/auth/register                ║');
   console.log('║   POST /api/auth/login                   ║');
   console.log('║   GET  /api/auth/me                      ║');

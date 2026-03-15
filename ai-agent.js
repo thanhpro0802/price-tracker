@@ -207,13 +207,99 @@ const STRATEGIES = {
       console.log(`[crypto] CryptoCompare error: ${e.message}`);
     }
 
-    throw new Error(`Không lấy được giá "${coinId}". Cả 3 nguồn (CoinGecko/Binance/CryptoCompare) đều thất bại. Thử lại sau.`);
+    // ── Source 4: CoinLore (no rate limit, no key) ────────────
+    // Cần tìm CoinLore ID từ symbol trước (search qua tickers)
+    try {
+      // CoinLore có nameid = CoinGecko coin ID (ví dụ: "bitcoin", "dogecoin", "ripple")
+      // Search bằng nameid trực tiếp nếu có
+      const COINLORE_IDS = {
+        'bitcoin':'90','ethereum':'80','solana':'48543','dogecoin':'2',
+        'ripple':'58','cardano':'2010','polkadot':'26703','chainlink':'41376',
+        'shiba-inu':'5765','litecoin':'1','bitcoin-cash':'4','stellar':'89',
+        'tron':'1958','monero':'55','cosmos':'72854','near':'103669',
+        'avalanche-2':'83947','matic-network':'28321','uniswap':'25288',
+        'algorand':'31978','vechain':'3077','filecoin':'2321',
+        'internet-computer':'33285','aptos':'95491','arbitrum':'94657',
+        'optimism':'91553','sui':'95003','injective-protocol':'82750',
+        'pepe':'104318','floki':'84618',
+      };
+      const clId = COINLORE_IDS[coinId];
+      if (clId) {
+        const r4 = await fetchJSON(`https://api.coinlore.net/api/ticker/?id=${clId}`);
+        const coin = Array.isArray(r4.data) ? r4.data[0] : null;
+        if (coin?.price_usd) {
+          const price = parseFloat(coin.price_usd);
+          const ch    = parseFloat(coin.percent_change_24h || 0);
+          console.log(`[crypto] CoinLore OK: ${coinId} = $${price}`);
+          return { price, change24h: +ch.toFixed(4), currency: 'USD', source: 'coinlore' };
+        }
+      } else {
+        // Không có ID sẵn → search qua tickers (lấy top 500, tìm theo nameid)
+        for (let start = 0; start <= 400; start += 100) {
+          const r4 = await fetchJSON(`https://api.coinlore.net/api/tickers/?start=${start}&limit=100`);
+          const coins = r4.data?.data || [];
+          const found = coins.find(c => c.nameid === coinId || c.symbol?.toLowerCase() === ticker.toLowerCase());
+          if (found?.price_usd) {
+            const price = parseFloat(found.price_usd);
+            const ch    = parseFloat(found.percent_change_24h || 0);
+            console.log(`[crypto] CoinLore search OK: ${coinId} = $${price}`);
+            return { price, change24h: +ch.toFixed(4), currency: 'USD', source: 'coinlore' };
+          }
+          if (coins.length < 100) break; // Hết data
+        }
+      }
+      console.log(`[crypto] CoinLore no data for ${coinId}`);
+    } catch(e) {
+      console.log(`[crypto] CoinLore error: ${e.message}`);
+    }
+
+    throw new Error(`Không lấy được giá "${coinId}". Cả 4 nguồn (CoinGecko/Binance/CryptoCompare/CoinLore) đều thất bại. Thử lại sau.`);
   },
 
   goldApi: async (symbol) => {
-    const r = await fetchJSON(`https://api.gold-api.com/price/${symbol.toUpperCase()}`);
-    if (!r.data?.price) throw new Error(`"${symbol}" not found on gold-api.com`);
-    return { price: +parseFloat(r.data.price).toFixed(2), change24h: 0, currency: 'USD/oz', source: 'gold-api.com' };
+    // ── Source 1: gold-api.com ────────────────────────────────
+    try {
+      const r = await fetchJSON(`https://api.gold-api.com/price/${symbol.toUpperCase()}`);
+      if (r.status === 200 && r.data?.price) {
+        console.log(`[gold] gold-api.com OK: ${symbol} = $${r.data.price}`);
+        return { price: +parseFloat(r.data.price).toFixed(2), change24h: 0, currency: 'USD/oz', source: 'gold-api.com' };
+      }
+      console.log(`[gold] gold-api.com ${r.status} for ${symbol} → trying NBP fallback...`);
+    } catch(e) {
+      console.log(`[gold] gold-api.com error: ${e.message} → trying NBP fallback...`);
+    }
+
+    // ── Source 2: NBP Web API (fallback) ─────────────────────
+    // NBP trả giá vàng theo PLN/gram (1g vàng nguyên chất 1000‰)
+    // Cần convert: PLN/g → USD/oz (1 oz = 31.1035g)
+    // Bước 1: lấy giá vàng PLN/g từ NBP
+    // Bước 2: lấy tỷ giá USD/PLN từ NBP exchangerates table A
+    try {
+      const [goldRes, fxRes] = await Promise.all([
+        fetchJSON('https://api.nbp.pl/api/cenyzlota/?format=json'),
+        fetchJSON('https://api.nbp.pl/api/exchangerates/rates/a/usd/?format=json'),
+      ]);
+
+      // goldRes.data là mảng [{data, cena}], cena = PLN per gram
+      const goldArr = Array.isArray(goldRes.data) ? goldRes.data : null;
+      const cenaPlnPerGram = goldArr?.[goldArr.length - 1]?.cena;
+
+      // fxRes.data.rates[0].mid = PLN per 1 USD (ví dụ: 3.92 PLN/USD)
+      const plnPerUsd = fxRes.data?.rates?.[0]?.mid;
+
+      if (!cenaPlnPerGram || !plnPerUsd) throw new Error('NBP: thiếu dữ liệu cena hoặc tỷ giá USD');
+
+      // PLN/g ÷ PLN/USD = USD/g → × 31.1035 = USD/oz
+      const usdPerGram = cenaPlnPerGram / plnPerUsd;
+      const usdPerOz   = +(usdPerGram * 31.1035).toFixed(2);
+
+      console.log(`[gold] NBP OK: ${cenaPlnPerGram} PLN/g ÷ ${plnPerUsd} PLN/USD × 31.1035 = $${usdPerOz}/oz`);
+      return { price: usdPerOz, change24h: 0, currency: 'USD/oz', source: 'nbp.pl' };
+    } catch(e) {
+      console.log(`[gold] NBP fallback error: ${e.message}`);
+    }
+
+    throw new Error(`Không lấy được giá vàng "${symbol}". Cả gold-api.com lẫn NBP đều thất bại.`);
   },
 
   exchangeRate: async (from, to = 'VND') => {
@@ -410,6 +496,181 @@ const STRATEGIES = {
     return { price, change24h, currency: 'VND', source: 'yahoo-finance-vn' };
   },
 
+  // Tiki — sản phẩm bán trên Tiki.vn (giá VND)
+  // Dùng Tiki public API: search theo tên → lấy product_id → fetch giá
+  tikiProduct: async (query) => {
+    // ── Source 1: Tiki search API ─────────────────────────────
+    const searchUrl = `https://tiki.vn/api/v2/products?limit=5&q=${encodeURIComponent(query)}&sort=top_seller`;
+    const r = await fetchJSON(searchUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Accept':     'application/json',
+        'Referer':    'https://tiki.vn',
+      }
+    });
+
+    const items = r.data?.data;
+    if (!items || items.length === 0) throw new Error(`Không tìm thấy sản phẩm "${query}" trên Tiki`);
+
+    // Lấy sản phẩm đầu tiên (top seller)
+    const product = items[0];
+    const productId = product.id;
+    const name      = product.name || query;
+    const price     = product.price || product.original_price || 0;
+    const original  = product.original_price || price;
+
+    if (!price) throw new Error(`Không lấy được giá sản phẩm "${name}" trên Tiki`);
+
+    // ── Source 2: Lấy chi tiết để có giá chính xác hơn ───────
+    try {
+      const detail = await fetchJSON(`https://tiki.vn/api/v2/products/${productId}`, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          'Accept':     'application/json',
+          'Referer':    'https://tiki.vn',
+        }
+      });
+      const d = detail.data;
+      if (d?.price) {
+        const detailPrice    = d.price;
+        const detailOriginal = d.original_price || detailPrice;
+        const change24h = detailOriginal ? +((detailPrice - detailOriginal) / detailOriginal * 100).toFixed(2) : 0;
+        console.log(`[tiki] ✅ ${d.name}: ${detailPrice.toLocaleString('vi-VN')}đ`);
+        return {
+          price:    detailPrice,
+          change24h,
+          currency: 'VND',
+          source:   'tiki.vn',
+          url:      `https://tiki.vn/${d.url_key || ''}.html?spid=${productId}`,
+        };
+      }
+    } catch(e) {
+      console.log(`[tiki] Detail fetch failed: ${e.message}, using search result`);
+    }
+
+    // Fallback: dùng giá từ search result
+    const change24h = original ? +((price - original) / original * 100).toFixed(2) : 0;
+    console.log(`[tiki] ✅ (search) ${name}: ${price.toLocaleString('vi-VN')}đ`);
+    return {
+      price,
+      change24h,
+      currency: 'VND',
+      source:   'tiki.vn',
+    };
+  },
+
+  // Thế Giới Di Động + FPT Shop — điện thoại, laptop, đồ điện tử VN
+  // TGDD có public API search JSON, FPT Shop dùng HTML scrape
+  tgddProduct: async (query) => {
+
+    // ── Source 1: TGDD Search API (đúng domain) ───────────────
+    try {
+      const searchUrl = `https://www.thegioididong.com/ajax/SearchV2?key=${encodeURIComponent(query)}&currentPage=1`;
+      const r = await fetchJSON(searchUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          'Accept':     'application/json, text/javascript, */*',
+          'Referer':    'https://www.thegioididong.com/',
+          'X-Requested-With': 'XMLHttpRequest',
+        }
+      });
+      const products = r.data?.Products || r.data?.data?.Products
+          || (Array.isArray(r.data) ? r.data : []);
+      if (Array.isArray(products) && products.length > 0) {
+        const p = products[0];
+        const price    = p.Price || p.price || p.CurrentPrice || p.currentPrice || 0;
+        const oldPrice = p.OldPrice || p.oldPrice || p.OriginalPrice || price;
+        if (price > 0) {
+          const change24h = oldPrice && oldPrice !== price ? +((price - oldPrice) / oldPrice * 100).toFixed(2) : 0;
+          const name = p.Name || p.name || query;
+          console.log(`[tgdd] ✅ ${name}: ${price.toLocaleString('vi-VN')}đ`);
+          return { price, change24h, currency: 'VND', source: 'thegioididong.com' };
+        }
+      }
+    } catch(e) { console.log(`[tgdd-api] failed: ${e.message}`); }
+
+    // ── Source 2: TGDD Search HTML ────────────────────────────
+    try {
+      const html = await fetchHTML(`https://www.thegioididong.com/tim-kiem?key=${encodeURIComponent(query)}`);
+      if (html) {
+        // JSON-LD structured data (chính xác nhất)
+        const jsonLdMatch = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/i);
+        if (jsonLdMatch) {
+          try {
+            const ld = JSON.parse(jsonLdMatch[1]);
+            const offers = ld.offers || (Array.isArray(ld) && ld[0]?.offers);
+            const price = offers?.price || offers?.lowPrice;
+            if (price && price > 100000) {
+              console.log(`[tgdd-jsonld] ✅ ${query}: ${Number(price).toLocaleString('vi-VN')}đ`);
+              return { price: Number(price), change24h: 0, currency: 'VND', source: 'thegioididong.com' };
+            }
+          } catch(e2) {}
+        }
+        // Fallback: regex tìm giá trong HTML
+        const priceMatch = html.match(/data-price="(\d{6,})"/i)
+            || html.match(/"price"\s*:\s*"?(\d{6,})"?/i)
+            || html.match(/class="[^"]*price[^"]*"[^>]*>\s*[\D]*([\d.]{7,})/i);
+        if (priceMatch) {
+          const price = parseInt(priceMatch[1].replace(/\./g, ''));
+          if (price > 100000) {
+            console.log(`[tgdd-html] ✅ ${query}: ${price.toLocaleString('vi-VN')}đ`);
+            return { price, change24h: 0, currency: 'VND', source: 'thegioididong.com' };
+          }
+        }
+      }
+    } catch(e) { console.log(`[tgdd-html] failed: ${e.message}`); }
+
+    // ── Source 3: FPT Shop Search HTML ───────────────────────
+    try {
+      const html2 = await fetchHTML(`https://fptshop.com.vn/tim-kiem?q=${encodeURIComponent(query)}`);
+      if (html2) {
+        // JSON-LD
+        const jsonLdMatch = html2.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/i);
+        if (jsonLdMatch) {
+          try {
+            const ld = JSON.parse(jsonLdMatch[1]);
+            const price = ld.offers?.price || ld.offers?.lowPrice
+                || (Array.isArray(ld) && (ld[0]?.offers?.price || ld[0]?.offers?.lowPrice));
+            if (price && Number(price) > 100000) {
+              console.log(`[fptshop-jsonld] ✅ ${query}: ${Number(price).toLocaleString('vi-VN')}đ`);
+              return { price: Number(price), change24h: 0, currency: 'VND', source: 'fptshop.com.vn' };
+            }
+          } catch(e2) {}
+        }
+        // Regex fallback
+        const priceMatch = html2.match(/data-price="(\d{6,})"/i)
+            || html2.match(/"price"\s*:\s*"?(\d{6,})"?/i)
+            || html2.match(/class="[^"]*price[^"]*"[^>]*>\s*[\D]*([\d.]{7,})/i);
+        if (priceMatch) {
+          const price = parseInt(priceMatch[1].replace(/\./g, ''));
+          if (price > 100000) {
+            console.log(`[fptshop-html] ✅ ${query}: ${price.toLocaleString('vi-VN')}đ`);
+            return { price, change24h: 0, currency: 'VND', source: 'fptshop.com.vn' };
+          }
+        }
+      }
+    } catch(e) { console.log(`[fptshop-html] failed: ${e.message}`); }
+
+    // ── Source 4: Tiki fallback (vẫn là điện tử) ─────────────
+    try {
+      const searchUrl = `https://tiki.vn/api/v2/products?limit=5&q=${encodeURIComponent(query)}&sort=top_seller&category=1789`;
+      const r = await fetchJSON(searchUrl, {
+        headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://tiki.vn' }
+      });
+      const items = r.data?.data;
+      if (items?.length > 0) {
+        const p = items[0];
+        const price = p.price || p.original_price || 0;
+        if (price > 100000) {
+          console.log(`[tiki-fallback] ✅ ${p.name}: ${price.toLocaleString('vi-VN')}đ`);
+          return { price, change24h: 0, currency: 'VND', source: 'tiki.vn (fallback)' };
+        }
+      }
+    } catch(e) { console.log(`[tiki-fallback] failed: ${e.message}`); }
+
+    throw new Error(`Không tìm thấy giá "${query}" trên TGDD/FPT Shop/Tiki. Thử tên cụ thể hơn, ví dụ "iPhone 16 Pro Max 256GB".`);
+  },
+
 };
 // ─── DANH SÁCH QUỸ MỞ VN ─────────────────────────────────────
 const VN_FUND_MAP = {
@@ -601,7 +862,7 @@ function validatePlan(plan) {
       return `Missing required field: "${f}"`;
     }
   }
-  if (!['coingecko', 'goldApi', 'exchangeRate', 'yahooFinance', 'vnStock', 'petrolimex', 'vnFund'].includes(plan.fetchStrategy)) {
+  if (!['coingecko', 'goldApi', 'exchangeRate', 'yahooFinance', 'vnStock', 'petrolimex', 'vnFund', 'tikiProduct', 'tgddProduct'].includes(plan.fetchStrategy)) {
     return `Invalid fetchStrategy: "${plan.fetchStrategy}".`;
   }
   return null; // valid
@@ -639,10 +900,27 @@ Available fetchStrategies:
    fetchParam = RON95-V | RON92 | DO (diesel) | MAZ (mazut)
    USE THIS for: xăng, xăng ron95, xăng ron92, xăng A95, xăng e5, dầu diesel, giá xăng VN
 
-Required JSON — ALL fields non-null for supported assets:
-{"name":"...","symbol":"...","category":"crypto|metal|currency|commodity|stock|fund","icon":"emoji","color":"#hex","currency":"USD|USD/oz|VND","fetchStrategy":"coingecko|goldApi|exchangeRate|yahooFinance|vnStock|petrolimex","fetchParam":"...","fetchParam2":null,"confidence":0.95,"reasoning":"Vietnamese sentence"}
+8. "tikiProduct" — sản phẩm bán trên Tiki.vn, currency = VND
+   fetchParam = tên sản phẩm tiếng Việt để tìm kiếm (ví dụ: "iPhone 16 Pro Max 256GB", "Samsung Galaxy S25", "Máy lọc không khí Xiaomi")
+   USE THIS for: bất kỳ sản phẩm nào người dùng hỏi "giá trên Tiki", điện thoại, laptop, đồ gia dụng, mỹ phẩm bán online VN
+   Ví dụ: "iPhone 16" → fetchParam="iPhone 16 Pro Max", "tai nghe Sony" → fetchParam="tai nghe Sony WH-1000XM5"
+
+9. "tgddProduct" — điện thoại, laptop, đồ điện tử từ Thế Giới Di Động hoặc FPT Shop, currency = VND
+   fetchParam = tên sản phẩm điện tử cụ thể (ví dụ: "iPhone 16 Pro Max 256GB", "Samsung Galaxy S25 Ultra", "MacBook Air M3", "Laptop Asus Vivobook")
+   USE THIS for: điện thoại, laptop, máy tính bảng, tai nghe, tivi, tủ lạnh, máy giặt — bất kỳ đồ điện tử/gia dụng nào
+   DEFAULT cho mọi câu hỏi về giá đồ điện tử VN không đề cập cụ thể Tiki
+   Ví dụ: "iPhone 16 giá bao nhiêu" → tgddProduct, "laptop gaming" → tgddProduct, "Samsung S25" → tgddProduct
+
+
+{"name":"...","symbol":"...","category":"crypto|metal|currency|commodity|stock|fund|product","icon":"emoji","color":"#hex","currency":"USD|USD/oz|VND","fetchStrategy":"coingecko|goldApi|exchangeRate|yahooFinance|vnStock|petrolimex|vnFund|tikiProduct|tgddProduct","fetchParam":"...","fetchParam2":null,"confidence":0.95,"reasoning":"Vietnamese sentence"}
 
 Key examples:
+- "iPhone 16 Pro"/"điện thoại Apple" → {"name":"iPhone 16 Pro 256GB","symbol":"TGDD-IP16PRO","category":"product","icon":"📱","color":"#1a1a1a","currency":"VND","fetchStrategy":"tgddProduct","fetchParam":"iPhone 16 Pro 256GB","fetchParam2":null,"confidence":1,"reasoning":"Giá iPhone 16 Pro tại TGDD/FPT Shop"}
+- "Samsung S25"/"Samsung Galaxy" → {"name":"Samsung Galaxy S25","symbol":"TGDD-S25","category":"product","icon":"📱","color":"#1428A0","currency":"VND","fetchStrategy":"tgddProduct","fetchParam":"Samsung Galaxy S25","fetchParam2":null,"confidence":1,"reasoning":"Giá Samsung S25 tại TGDD/FPT Shop"}
+- "laptop gaming"/"MacBook" → {"name":"MacBook Air M3","symbol":"TGDD-MBA","category":"product","icon":"💻","color":"#555","currency":"VND","fetchStrategy":"tgddProduct","fetchParam":"MacBook Air M3","fetchParam2":null,"confidence":1,"reasoning":"Giá MacBook Air M3 tại TGDD/FPT Shop"}
+- "iPhone 16 Pro Tiki"/"giá iPhone Tiki" → {"name":"iPhone 16 Pro 256GB","symbol":"TIKI-IP16PRO","category":"product","icon":"📱","color":"#1a1a1a","currency":"VND","fetchStrategy":"tikiProduct","fetchParam":"iPhone 16 Pro 256GB","fetchParam2":null,"confidence":1,"reasoning":"Giá iPhone 16 Pro trên Tiki.vn"}
+- "tai nghe Sony Tiki"/"Sony WH-1000XM5" → {"name":"Sony WH-1000XM5","symbol":"TIKI-SONYWH","category":"product","icon":"🎧","color":"#1a1a1a","currency":"VND","fetchStrategy":"tikiProduct","fetchParam":"Sony WH-1000XM5","fetchParam2":null,"confidence":1,"reasoning":"Giá tai nghe Sony trên Tiki.vn"}
+- "Samsung S25 Tiki" → {"name":"Samsung Galaxy S25","symbol":"TIKI-S25","category":"product","icon":"📱","color":"#1428A0","currency":"VND","fetchStrategy":"tikiProduct","fetchParam":"Samsung Galaxy S25","fetchParam2":null,"confidence":1,"reasoning":"Giá Samsung Galaxy S25 trên Tiki.vn"}
 - "xăng ron95"/"xăng" → {"name":"Xăng RON95-V","symbol":"RON95-V","category":"commodity","icon":"⛽","color":"#e53935","currency":"VND","fetchStrategy":"petrolimex","fetchParam":"RON95-V","fetchParam2":null,"confidence":1,"reasoning":"Giá xăng RON95-V từ Petrolimex VN"}
 - "xăng ron92"/"e5" → {"name":"Xăng E5 RON92","symbol":"RON92","category":"commodity","icon":"⛽","color":"#fb8c00","currency":"VND","fetchStrategy":"petrolimex","fetchParam":"RON92","fetchParam2":null,"confidence":1,"reasoning":"Giá xăng E5 RON92 từ Petrolimex"}
 - "dầu diesel"/"diesel" → {"name":"Dầu Diesel","symbol":"DO","category":"commodity","icon":"🛢️","color":"#546e7a","currency":"VND","fetchStrategy":"petrolimex","fetchParam":"DO","fetchParam2":null,"confidence":1,"reasoning":"Giá dầu diesel từ Petrolimex VN"}
@@ -791,6 +1069,8 @@ async function discoverAndAddAsset(userQuery, geminiKey, existingAssets) {
       case 'vnStock':       priceData = await STRATEGIES.vnStock(plan.fetchParam); break;
       case 'petrolimex':    priceData = await STRATEGIES.petrolimex(plan.fetchParam || 'RON95-V'); break;
       case 'vnFund':        priceData = await STRATEGIES['vnFund'](plan.fetchParam); break;
+      case 'tikiProduct':   priceData = await STRATEGIES.tikiProduct(plan.fetchParam); break;
+      case 'tgddProduct':   priceData = await STRATEGIES.tgddProduct(plan.fetchParam); break;
       default: throw new Error(`Unknown fetchStrategy: "${plan.fetchStrategy}"`);
     }
   } catch(e) {
@@ -834,6 +1114,8 @@ async function refreshDynamicAssetPrice(asset) {
       case 'vnStock':      return await STRATEGIES.vnStock(asset.fetchParam);
       case 'petrolimex':   return await STRATEGIES.petrolimex(asset.fetchParam || 'RON95-V');
       case 'vnFund':       return await STRATEGIES['vnFund'](asset.fetchParam);
+      case 'tikiProduct':  return await STRATEGIES.tikiProduct(asset.fetchParam);
+      case 'tgddProduct':  return await STRATEGIES.tgddProduct(asset.fetchParam);
       default:             return null;
     }
   } catch(e) {
