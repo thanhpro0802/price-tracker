@@ -489,7 +489,7 @@ function doLogout(){
 async function tryAutoLogin(){
   const token=localStorage.getItem('spt_token');
   const user=localStorage.getItem('spt_user');
-  if(!token||!user)return;
+  if(!token||!user)return false; // Thêm false ở đây
   try{
     const d=await apiCall('/api/auth/me','GET',null,token);
     if(d.ok){
@@ -498,8 +498,13 @@ async function tryAutoLogin(){
       await showApp();
       return true;
     }
-  }catch(e){}
-  localStorage.removeItem('spt_token');localStorage.removeItem('spt_user');
+    // Chỉ xoá token khi server xác nhận token sai/hết hạn
+    localStorage.removeItem('spt_token');
+    localStorage.removeItem('spt_user');
+  }catch(e){
+    // NẾU LỖI MẠNG (Server chưa lên kịp) -> KHÔNG ĐƯỢC XOÁ TOKEN
+    console.warn('Đang chờ server khởi động...');
+  }
   return false;
 }
 
@@ -1175,13 +1180,26 @@ async function confirmAddAIAsset(){
     const d=await apiCall('/api/ai/confirm','POST',{asset:a},authToken);
     if(!d.ok){ showNotif('❌ Lỗi',d.error||'Không thể thêm asset'); return; }
 
-    // Thêm vào local state
-    dynamicAssets.push(d.asset||a);
-    ASSETS.push({ id:a.id, name:a.name, sym:a.sym, cat:a.cat,
-      icon:a.icon||'📊', color:a.color||'#888', price:a.price||0,
-      prev:a.price||0, cur:a.cur||'USD', addedBy:'ai-agent' });
+    // --- BẮT ĐẦU ĐOẠN SỬA: LẤY ID THẬT TỪ BACKEND TRẢ VỀ ---
+    const finalAsset = d.asset || a;
+
+    dynamicAssets.push(finalAsset);
+    ASSETS.push({
+      id: finalAsset.id, // Bắt buộc phải là finalAsset.id
+      name: finalAsset.name,
+      sym: finalAsset.sym,
+      cat: finalAsset.cat,
+      icon: finalAsset.icon || '📊',
+      color: finalAsset.color || '#888',
+      price: finalAsset.price || 0,
+      prev: finalAsset.price || 0,
+      cur: finalAsset.cur || 'USD',
+      addedBy: 'ai-agent'
+    });
+    // --- KẾT THÚC ĐOẠN SỬA ---
+
     updateBadges();
-    showNotif(`✅ Đã thêm ${a.name}`,`${fmtPrice(a.price,a.cur)} · nguồn: ${a.source}`);
+    showNotif(`✅ Đã thêm ${finalAsset.name}`,`${fmtPrice(finalAsset.price,finalAsset.cur)} · nguồn: ${finalAsset.source}`);
     document.getElementById('ai-query').value='';
     renderPage();
   }catch(e){

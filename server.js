@@ -23,7 +23,7 @@ const { discoverAndAddAsset, refreshDynamicAssetPrice } = require('./ai-agent');
     if (eqIdx === -1) continue;
     const key = trimmed.slice(0, eqIdx).trim();
     const val = trimmed.slice(eqIdx + 1).trim()
-      .replace(/^["']/, '').replace(/["']$/, '');            // bỏ quotes
+        .replace(/^["']/, '').replace(/["']$/, '');            // bỏ quotes
     if (key && !process.env[key]) {                          // không ghi đè env đã có
       process.env[key] = val;
     }
@@ -46,7 +46,22 @@ const CFG = {
 // ─── JSON DATABASE ───────────────────────────────────────────
 function loadDB() {
   try {
-    if (fs.existsSync(DB_FILE)) return JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+    if (fs.existsSync(DB_FILE)) {
+      const db = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+      // Migration: fix dynamicAssets nếu bị lưu sai dạng array thay vì object theo userId
+      if (Array.isArray(db.dynamicAssets)) {
+        console.log('[Migration] dynamicAssets là array — reset về {} (dữ liệu cũ bị lỗi cấu trúc)');
+        db.dynamicAssets = {};
+        fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
+      }
+      // Migration: fix hiddenAssets nếu bị lưu sai dạng array thay vì object theo userId
+      if (Array.isArray(db.hiddenAssets)) {
+        console.log('[Migration] hiddenAssets là array — reset về {}');
+        db.hiddenAssets = {};
+        fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
+      }
+      return db;
+    }
   } catch(e) {}
   return { users: {}, watchlists: {}, alerts: {}, hiddenAssets: {}, dynamicAssets: {} };
 }
@@ -703,12 +718,12 @@ const server = http.createServer(async (req, res) => {
       hasApiKey:    !!CFG.GEMINI_API_KEY,
       dynamicCount: authMiddleware(req) ? loadDynamicAssets(authMiddleware(req).userId).length : 0,
       message:      CFG.GEMINI_API_KEY
-        ? 'AI Agent ready ✅'
-        : 'Thêm GEMINI_API_KEY=AIza... khi chạy server',
+          ? 'AI Agent ready ✅'
+          : 'Thêm GEMINI_API_KEY=AIza... khi chạy server',
     });
   }
 
-    // DELETE /api/assets/:id  — Ẩn static asset (soft delete)
+  // DELETE /api/assets/:id  — Ẩn static asset (soft delete)
   if (pathname.match(/^\/api\/assets\/\d+$/) && req.method === 'DELETE') {
     const payload = authMiddleware(req);
     if (!payload) return sendJSON(res, { ok: false, error: 'Unauthorized' }, 401);
@@ -731,10 +746,10 @@ const server = http.createServer(async (req, res) => {
   if (pathname === '/api/assets/hidden' && req.method === 'GET') {
     const payload = authMiddleware(req);
     if (!payload) return sendJSON(res, { ok: false, error: 'Unauthorized' }, 401);
-    return sendJSON(res, { ok: true, hiddenAssets: getHiddenAssets() });
+    return sendJSON(res, { ok: true, hiddenAssets: getHiddenAssets(payload.userId) });
   }
 
-    sendJSON(res, { ok: false, error: 'Not found' }, 404);
+  sendJSON(res, { ok: false, error: 'Not found' }, 404);
 });
 
 initProducts();
@@ -744,8 +759,8 @@ fetchAll();
 setInterval(fetchAll, CFG.UPDATE_INTERVAL_MS);
 
 const HOST = process.env.RAILWAY_PUBLIC_DOMAIN
-  ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
-  : `http://localhost:${PORT}`;
+    ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+    : `http://localhost:${PORT}`;
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log('');
