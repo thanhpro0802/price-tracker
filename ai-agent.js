@@ -80,11 +80,11 @@ function fetchHTML(reqUrl) {
 function parseGasolinePriceFromHTML(html, productCode = 'RON95-V') {
   // Strip scripts/styles/tags
   const text = html
-    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
-    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;|\u00a0/g, ' ')
-    .replace(/\s+/g, ' ');
+      .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+      .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;|\u00a0/g, ' ')
+      .replace(/\s+/g, ' ');
 
   // Keyword sets cho mỗi sản phẩm (lowercase, no diacritics ok)
   const KEYWORDS = {
@@ -163,7 +163,7 @@ const STRATEGIES = {
     // ── Source 1: CoinGecko ──
     try {
       const r = await fetchJSON(
-        `https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd&include_24hr_change=true`
+          `https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd&include_24hr_change=true`
       );
       if (r.status === 200 && r.data?.[coinId]?.usd) {
         const d = r.data[coinId];
@@ -193,7 +193,7 @@ const STRATEGIES = {
     // ── Source 3: CryptoCompare ──
     try {
       const r3 = await fetchJSON(
-        `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${ticker}&tsyms=USD`
+          `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${ticker}&tsyms=USD`
       );
       const raw = r3.data?.RAW?.[ticker]?.USD;
       if (raw?.PRICE) {
@@ -252,7 +252,7 @@ const STRATEGIES = {
         headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0' }
       });
       const items = Array.isArray(r.data) ? r.data
-                  : Array.isArray(r.data?.data) ? r.data.data : null;
+          : Array.isArray(r.data?.data) ? r.data.data : null;
       if (items?.length > 0) {
         const kwMap = {
           'RON95-V': ['ron95-v','ron 95-v','ron 95-iii','ron95-iii','95-v','95-iii'],
@@ -316,8 +316,8 @@ const STRATEGIES = {
   yahooFinance: async (ticker, currency = 'USD') => {
     // Yahoo Finance v8 chart API — free, no key needed
     const r = await fetchJSON(
-      `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=2d`,
-      { headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0' } }
+        `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=2d`,
+        { headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0' } }
     );
     const result = r.data?.chart?.result?.[0];
     if (!result) throw new Error(`"${ticker}" not found on Yahoo Finance`);
@@ -344,16 +344,16 @@ const STRATEGIES = {
     // Try SSI iBoard API first
     try {
       const r = await fetchJSON(
-        `https://iboard-query.ssi.com.vn/v2/stock/ticker/${sym}`,
-        { headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0', 'Origin': 'https://iboard.ssi.com.vn', 'Referer': 'https://iboard.ssi.com.vn/' } }
+          `https://iboard-query.ssi.com.vn/v2/stock/ticker/${sym}`,
+          { headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0', 'Origin': 'https://iboard.ssi.com.vn', 'Referer': 'https://iboard.ssi.com.vn/' } }
       );
       const d = r.data?.data;
       if (d && d.lastPrice) {
         // SSI lastPrice đơn vị 1000 VND (26.65 → 26,650 VND/cp)
-          const rawSSI   = parseFloat(d.lastPrice);
-          const price    = rawSSI < 1000 ? rawSSI * 1000 : rawSSI;
-          const rawRef   = parseFloat(d.refPrice || d.lastPrice);
-          const refPrice = rawRef < 1000 ? rawRef * 1000 : rawRef;
+        const rawSSI   = parseFloat(d.lastPrice);
+        const price    = rawSSI < 1000 ? rawSSI * 1000 : rawSSI;
+        const rawRef   = parseFloat(d.refPrice || d.lastPrice);
+        const refPrice = rawRef < 1000 ? rawRef * 1000 : rawRef;
         const change24h = refPrice ? +((price - refPrice) / refPrice * 100).toFixed(2) : 0;
         return { price, change24h, currency: 'VND', source: 'ssi-iboard' };
       }
@@ -364,8 +364,8 @@ const STRATEGIES = {
     // Fallback: TCBS API
     try {
       const r2 = await fetchJSON(
-        `https://apipubaws.tcbs.com.vn/stock-insight/v1/stock/second-chart?ticker=${sym}&type=stock`,
-        { headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0' } }
+          `https://apipubaws.tcbs.com.vn/stock-insight/v1/stock/second-chart?ticker=${sym}&type=stock`,
+          { headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0' } }
       );
       const d2 = r2.data;
       if (d2 && d2.p) {
@@ -379,8 +379,8 @@ const STRATEGIES = {
     // Fallback: VietStock API
     try {
       const r3 = await fetchJSON(
-        `https://api.vietstock.vn/ta/history?symbol=${sym}&resolution=D&from=${Math.floor(Date.now()/1000)-86400*3}&to=${Math.floor(Date.now()/1000)}&countback=2&type=stock&cat=10`,
-        { headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0', 'Origin': 'https://vietstock.vn' } }
+          `https://api.vietstock.vn/ta/history?symbol=${sym}&resolution=D&from=${Math.floor(Date.now()/1000)-86400*3}&to=${Math.floor(Date.now()/1000)}&countback=2&type=stock&cat=10`,
+          { headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0', 'Origin': 'https://vietstock.vn' } }
       );
       const closes = r3.data?.c;
       if (closes && closes.length > 0) {
@@ -395,8 +395,8 @@ const STRATEGIES = {
 
     // Final fallback: MSN Finance (Yahoo-compatible endpoint cho VN stocks)
     const r4 = await fetchJSON(
-      `https://query1.finance.yahoo.com/v8/finance/chart/${sym}.VN?interval=1d&range=2d`,
-      { headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0' } }
+        `https://query1.finance.yahoo.com/v8/finance/chart/${sym}.VN?interval=1d&range=2d`,
+        { headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0' } }
     );
     const meta = r4.data?.chart?.result?.[0]?.meta;
     if (!meta?.regularMarketPrice) throw new Error(`Không tìm thấy cổ phiếu "${sym}" trên sàn VN`);
@@ -411,6 +411,186 @@ const STRATEGIES = {
   },
 
 };
+// ─── DANH SÁCH QUỸ MỞ VN ─────────────────────────────────────
+const VN_FUND_MAP = {
+  'SSISCA':   { name: 'Quỹ SSI-SCA (Tăng Trưởng)',       manager: 'SSIAM' },
+  'SSIBF':    { name: 'Quỹ SSI Bond Fund',                manager: 'SSIAM' },
+  'SSIICO':   { name: 'Quỹ SSI ICO',                      manager: 'SSIAM' },
+  'VESAF':    { name: 'VinaCapital VEF',                   manager: 'VinaCapital' },
+  'VIBF':     { name: 'VinaCapital Bond',                  manager: 'VinaCapital' },
+  'VEOF':     { name: 'VinaCapital Equity Open',           manager: 'VinaCapital' },
+  'DCDS':     { name: 'DCVFM VN Diamond ETF',              manager: 'DCVFM' },
+  'E1VFVN30': { name: 'ETF VN30 DCVFM',                   manager: 'DCVFM' },
+  'TCEF':     { name: 'Techcom Capital Equity',            manager: 'Techcom Capital' },
+  'TCBF':     { name: 'Techcom Capital Bond',              manager: 'Techcom Capital' },
+  'MBVF':     { name: 'MB Capital Value Fund',             manager: 'MB Capital' },
+  'VFMVN30':  { name: 'VFM VN30 ETF',                     manager: 'VFM' },
+  'VFMVSF':   { name: 'VFM VN Small Cap ETF',              manager: 'VFM' },
+  'MAFPF1':   { name: 'Manulife Flexible Portfolio',       manager: 'Manulife' },
+  'MABF':     { name: 'Manulife Bond Fund',                manager: 'Manulife' },
+};
+
+// Fallback NAV values (approximate, tính đến 12/03/2026)
+const KNOWN_NAV = {
+  'SSISCA':   27450,  'SSIBF':    13820,  'SSIICO':   18900,
+  'VESAF':    48200,  'VIBF':     11250,  'VEOF':     16780,
+  'TCEF':     22100,  'TCBF':     10450,  'MAFPF1':   14600,
+  'E1VFVN30': 15800,  'VFMVN30':  16200,  'VFMVSF':   12400,
+  'DCDS':     19600,  'MBVF':     13200,
+};
+
+// ── vnFund: fetch NAV quỹ mở VN ──────────────────────────────
+// NAV/CCQ công bố T+1. Sources ưu tiên theo độ tin cậy thực tế:
+// 1. TCBS (cùng server với vnStock - đã proven)
+// 2. VNDirect public API (domain stable)
+// 3. SSI iBoard API
+// 4. fmarket.vn
+// 5. FiinTrade
+// 6. Fallback hardcoded
+STRATEGIES['vnFund'] = async (fundCode) => {
+  const sym = fundCode.toUpperCase().trim();
+
+  // ── Source 1: TCBS API ────────────────────────────────────
+  // TCBS hỗ trợ cả cổ phiếu lẫn quỹ mở, cùng endpoint đã dùng cho vnStock
+  try {
+    const r = await fetchJSON(
+        `https://apipubaws.tcbs.com.vn/fund-insight/v1/fund/${sym}/nav?page=0&size=2`,
+        { headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0', 'Referer': 'https://tcbs.com.vn' } }
+    );
+    const items = r.data?.listNavData || r.data?.data || r.data?.items || [];
+    if (items.length > 0) {
+      // TCBS sort desc, item[0] = mới nhất
+      const latest   = items[0];
+      const prev     = items[1];
+      const navCCQ   = parseFloat(latest.nav || latest.navPerUnit || latest.value || 0);
+      const prevCCQ  = prev ? parseFloat(prev.nav || prev.navPerUnit || prev.value || navCCQ) : navCCQ;
+      const change24h = prevCCQ ? +((navCCQ - prevCCQ) / prevCCQ * 100).toFixed(4) : 0;
+      if (navCCQ > 1000) {
+        console.log(`[vnFund] TCBS OK ${sym}: ${navCCQ.toLocaleString('vi-VN')}d/CCQ`);
+        return { price: navCCQ, change24h, currency: 'VND', source: 'tcbs' };
+      }
+    }
+  } catch(e) { console.log(`[vnFund] TCBS failed ${sym}: ${e.message}`); }
+
+  // ── Source 2: VNDirect public API ────────────────────────
+  // Endpoint public, không cần auth, trả NAV theo ngày
+  try {
+    const today   = new Date();
+    const from    = new Date(today - 7 * 86400000).toISOString().slice(0,10);
+    const to      = today.toISOString().slice(0,10);
+    const r = await fetchJSON(
+        `https://api.vndirect.com.vn/v4/fund_nav?q=fundCode:${sym}~navDate:gte:${from}~navDate:lte:${to}&sort=navDate:desc&size=2`,
+        { headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0', 'Referer': 'https://vndirect.com.vn' } }
+    );
+    const items = r.data?.data || r.data?.items || [];
+    if (items.length > 0) {
+      const latest   = items[0];
+      const prev     = items[1];
+      const navCCQ   = parseFloat(latest.navPerCcq || latest.nav || latest.navPerUnit || 0);
+      const prevCCQ  = prev ? parseFloat(prev.navPerCcq || prev.nav || prev.navPerUnit || navCCQ) : navCCQ;
+      const change24h = prevCCQ ? +((navCCQ - prevCCQ) / prevCCQ * 100).toFixed(4) : 0;
+      if (navCCQ > 1000) {
+        console.log(`[vnFund] VNDirect OK ${sym}: ${navCCQ.toLocaleString('vi-VN')}d/CCQ (${latest.navDate})`);
+        return { price: navCCQ, change24h, currency: 'VND', source: 'vndirect', navDate: latest.navDate };
+      }
+    }
+  } catch(e) { console.log(`[vnFund] VNDirect failed ${sym}: ${e.message}`); }
+
+  // ── Source 3: SSI iBoard REST API ────────────────────────
+  // Dùng cho tất cả quỹ (không chỉ SSI), endpoint mới hơn
+  try {
+    const r = await fetchJSON(
+        `https://iboard-query.ssi.com.vn/v2/fund/ccq-nav?symbol=${sym}&size=2`,
+        { headers: {
+            'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0',
+            'Origin': 'https://iboard.ssi.com.vn', 'Referer': 'https://iboard.ssi.com.vn/',
+            'X-Requested-With': 'XMLHttpRequest',
+          }}
+    );
+    const items = r.data?.data || r.data?.items || (Array.isArray(r.data) ? r.data : []);
+    if (items.length > 0) {
+      const latest   = items[0];
+      const prev     = items[1];
+      const navCCQ   = parseFloat(latest.navPerCCQ || latest.nav || latest.navPerShare || 0);
+      const prevCCQ  = prev ? parseFloat(prev.navPerCCQ || prev.nav || prev.navPerShare || navCCQ) : navCCQ;
+      const change24h = prevCCQ ? +((navCCQ - prevCCQ) / prevCCQ * 100).toFixed(4) : 0;
+      if (navCCQ > 1000) {
+        console.log(`[vnFund] SSI iBoard OK ${sym}: ${navCCQ.toLocaleString('vi-VN')}d/CCQ`);
+        return { price: navCCQ, change24h, currency: 'VND', source: 'ssi-iboard' };
+      }
+    }
+  } catch(e) { console.log(`[vnFund] SSI iBoard failed ${sym}: ${e.message}`); }
+
+  // ── Source 4: fmarket.vn search + NAV ────────────────────
+  try {
+    const searchR = await fetchJSON(
+        `https://fmarket.vn/api/v2/fund/search?query=${sym}&type=OPEN_END_FUND`,
+        { headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0', 'Origin': 'https://fmarket.vn', 'Referer': 'https://fmarket.vn/' } }
+    );
+    const funds = searchR.data?.data || searchR.data?.items || [];
+    const fund  = funds.find(f => (f.shortName || f.code || '').toUpperCase() === sym) || funds[0];
+    if (fund) {
+      const fundId = fund.id || fund.fundId;
+      const navR = await fetchJSON(
+          `https://fmarket.vn/api/v2/fund/${fundId}/nav-histories?page=1&pageSize=2&sort=navDate:desc`,
+          { headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0', 'Origin': 'https://fmarket.vn' } }
+      );
+      const navItems = navR.data?.data || navR.data?.items || [];
+      if (navItems.length > 0) {
+        const latest   = navItems[0];
+        const prevItem = navItems[1];
+        const navCCQ   = parseFloat(latest.navPerShare || latest.navPerUnit || latest.nav || 0);
+        const prevCCQ  = prevItem ? parseFloat(prevItem.navPerShare || prevItem.navPerUnit || prevItem.nav || navCCQ) : navCCQ;
+        const change24h = prevCCQ ? +((navCCQ - prevCCQ) / prevCCQ * 100).toFixed(4) : 0;
+        if (navCCQ > 1000) {
+          console.log(`[vnFund] fmarket OK ${sym}: ${navCCQ.toLocaleString('vi-VN')}d/CCQ`);
+          return { price: navCCQ, change24h, currency: 'VND', source: 'fmarket.vn' };
+        }
+      }
+    }
+  } catch(e) { console.log(`[vnFund] fmarket failed ${sym}: ${e.message}`); }
+
+  // ── Source 5: FiinTrade ───────────────────────────────────
+  try {
+    const r = await fetchJSON(
+        `https://restv2.fiintrade.vn/fund-management/funds/${sym}/nav-histories?pageIndex=1&pageSize=2&orderBy=NavDate&orderDir=desc`,
+        { headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0', 'Origin': 'https://fiintrade.vn' } }
+    );
+    const items = r.data?.items || r.data?.data || [];
+    if (items.length > 0) {
+      const latest   = items[0];
+      const prev     = items[1];
+      const navCCQ   = parseFloat(latest.navPerCertificate || latest.NavPerCertificate || latest.nav || 0);
+      const prevCCQ  = prev ? parseFloat(prev.navPerCertificate || prev.NavPerCertificate || prev.nav || navCCQ) : navCCQ;
+      const change24h = prevCCQ ? +((navCCQ - prevCCQ) / prevCCQ * 100).toFixed(4) : 0;
+      if (navCCQ > 1000) {
+        console.log(`[vnFund] FiinTrade OK ${sym}: ${navCCQ.toLocaleString('vi-VN')}d/CCQ`);
+        return { price: navCCQ, change24h, currency: 'VND', source: 'fiintrade' };
+      }
+    }
+  } catch(e) { console.log(`[vnFund] FiinTrade failed ${sym}: ${e.message}`); }
+
+  // ── Source 6: Fallback hardcoded (NAV tham khảo) ─────────
+  // Được cập nhật mỗi lần release. User có thể cập nhật thủ công trong app.
+  if (KNOWN_NAV[sym]) {
+    const nav = KNOWN_NAV[sym];
+    console.log(`[vnFund] Fallback NAV ${sym}: ${nav.toLocaleString('vi-VN')}d/CCQ`);
+    return {
+      price:    nav,
+      change24h: 0,
+      currency: 'VND',
+      source:   'fallback-nav',
+      note:     `NAV tham khao 12/03/2026 — nen cap nhat thu cong trong Them Asset`,
+    };
+  }
+
+  throw new Error(
+      `Khong tim duoc NAV quy "${sym}". ` +
+      `Ho tro: ${Object.keys(VN_FUND_MAP).join(', ')}. ` +
+      `Them thu cong trong menu Them Asset.`
+  );
+};
+
 
 // ── REQUIRED FIELDS cho plan hợp lệ ──────────────────────────
 const REQUIRED_FIELDS = ['name', 'symbol', 'fetchStrategy', 'fetchParam', 'confidence'];
@@ -421,8 +601,8 @@ function validatePlan(plan) {
       return `Missing required field: "${f}"`;
     }
   }
-  if (!['coingecko', 'goldApi', 'exchangeRate', 'yahooFinance', 'vnStock', 'petrolimex'].includes(plan.fetchStrategy)) {
-    return `Invalid fetchStrategy: "${plan.fetchStrategy}". Must be coingecko | goldApi | exchangeRate`;
+  if (!['coingecko', 'goldApi', 'exchangeRate', 'yahooFinance', 'vnStock', 'petrolimex', 'vnFund'].includes(plan.fetchStrategy)) {
+    return `Invalid fetchStrategy: "${plan.fetchStrategy}".`;
   }
   return null; // valid
 }
@@ -452,11 +632,15 @@ Available fetchStrategies:
    fetchParam = mã CK: VIC, VHM, VNM, TCB, VCB, FPT, MWG, HPG, MSN, ACB, BID, CTG, VPB, MBB, SSI, VND, HCM, BSI, REE, PNJ, DGW, SAB, GAS, PLX, VJC, HVN
 
 6. "petrolimex" — giá xăng dầu VN (lấy từ Petrolimex), currency = VND (VND/lít)
+
+7. "vnFund" — Quỹ mở VN (NAV/CCQ), currency = VND
+   fetchParam = mã quỹ: SSISCA, SSIBF, SSIICO, VESAF, VIBF, VEOF, DCDS, E1VFVN30, TCEF, TCBF, MBVF, VFMVN30, VFMVSF, MAFPF1, MABF
+   USE THIS for: quỹ đầu tư, quỹ mở, NAV CCQ, SSISCA, VESAF, quỹ VinaCapital, quỹ SSI, quỹ Techcom
    fetchParam = RON95-V | RON92 | DO (diesel) | MAZ (mazut)
    USE THIS for: xăng, xăng ron95, xăng ron92, xăng A95, xăng e5, dầu diesel, giá xăng VN
 
 Required JSON — ALL fields non-null for supported assets:
-{"name":"...","symbol":"...","category":"crypto|metal|currency|commodity|stock","icon":"emoji","color":"#hex","currency":"USD|USD/oz|VND","fetchStrategy":"coingecko|goldApi|exchangeRate|yahooFinance|vnStock|petrolimex","fetchParam":"...","fetchParam2":null,"confidence":0.95,"reasoning":"Vietnamese sentence"}
+{"name":"...","symbol":"...","category":"crypto|metal|currency|commodity|stock|fund","icon":"emoji","color":"#hex","currency":"USD|USD/oz|VND","fetchStrategy":"coingecko|goldApi|exchangeRate|yahooFinance|vnStock|petrolimex","fetchParam":"...","fetchParam2":null,"confidence":0.95,"reasoning":"Vietnamese sentence"}
 
 Key examples:
 - "xăng ron95"/"xăng" → {"name":"Xăng RON95-V","symbol":"RON95-V","category":"commodity","icon":"⛽","color":"#e53935","currency":"VND","fetchStrategy":"petrolimex","fetchParam":"RON95-V","fetchParam2":null,"confidence":1,"reasoning":"Giá xăng RON95-V từ Petrolimex VN"}
@@ -509,10 +693,10 @@ User request: "${userQuery}"`;
 
   // ── Clean & extract JSON ──────────────────────────────────
   const cleaned = allText
-    .replace(/^```json\s*/i, '')
-    .replace(/^```\s*/i, '')
-    .replace(/\s*```$/i, '')
-    .trim();
+      .replace(/^```json\s*/i, '')
+      .replace(/^```\s*/i, '')
+      .replace(/\s*```$/i, '')
+      .trim();
 
   const start = cleaned.indexOf('{');
   const end   = cleaned.lastIndexOf('}');
@@ -526,7 +710,7 @@ User request: "${userQuery}"`;
     // Extract individual fields using regex as fallback
     const extract = (key) => {
       const m = cleaned.match(new RegExp(`"${key}"\\s*:\\s*"([^"]*)"`, 'i'))
-                || cleaned.match(new RegExp(`"${key}"\\s*:\\s*([\\d.]+)`, 'i'));
+          || cleaned.match(new RegExp(`"${key}"\\s*:\\s*([\\d.]+)`, 'i'));
       return m ? m[1] : null;
     };
     const plan = {
@@ -579,9 +763,9 @@ async function discoverAndAddAsset(userQuery, geminiKey, existingAssets) {
   // Step 2: Check unsupported
   if (plan.fetchStrategy === 'unsupported' || plan.confidence < 0.3) {
     throw new Error(
-      plan.reasoning
-        ? `Không hỗ trợ: ${plan.reasoning}`
-        : `Không thể xác định "${userQuery}". Thử: tên crypto (Dogecoin), kim loại (đồng, bạch kim), hoặc tiền tệ (nhân dân tệ, won).`
+        plan.reasoning
+            ? `Không hỗ trợ: ${plan.reasoning}`
+            : `Không thể xác định "${userQuery}". Thử: tên crypto (Dogecoin), kim loại (đồng, bạch kim), hoặc tiền tệ (nhân dân tệ, won).`
     );
   }
 
@@ -591,8 +775,8 @@ async function discoverAndAddAsset(userQuery, geminiKey, existingAssets) {
 
   // Step 4: Duplicate check
   const dup = existingAssets.find(a =>
-    a.symbol?.toLowerCase() === plan.symbol?.toLowerCase() ||
-    a.name?.toLowerCase()   === plan.name?.toLowerCase()
+      a.symbol?.toLowerCase() === plan.symbol?.toLowerCase() ||
+      a.name?.toLowerCase()   === plan.name?.toLowerCase()
   );
   if (dup) throw new Error(`"${plan.name}" đã tồn tại trong tracker.`);
 
@@ -606,6 +790,7 @@ async function discoverAndAddAsset(userQuery, geminiKey, existingAssets) {
       case 'yahooFinance':  priceData = await STRATEGIES.yahooFinance(plan.fetchParam, plan.fetchParam2 || 'USD'); break;
       case 'vnStock':       priceData = await STRATEGIES.vnStock(plan.fetchParam); break;
       case 'petrolimex':    priceData = await STRATEGIES.petrolimex(plan.fetchParam || 'RON95-V'); break;
+      case 'vnFund':        priceData = await STRATEGIES['vnFund'](plan.fetchParam); break;
       default: throw new Error(`Unknown fetchStrategy: "${plan.fetchStrategy}"`);
     }
   } catch(e) {
@@ -648,6 +833,7 @@ async function refreshDynamicAssetPrice(asset) {
       case 'yahooFinance': return await STRATEGIES.yahooFinance(asset.fetchParam, asset.fetchParam2 || 'USD');
       case 'vnStock':      return await STRATEGIES.vnStock(asset.fetchParam);
       case 'petrolimex':   return await STRATEGIES.petrolimex(asset.fetchParam || 'RON95-V');
+      case 'vnFund':       return await STRATEGIES['vnFund'](asset.fetchParam);
       default:             return null;
     }
   } catch(e) {
